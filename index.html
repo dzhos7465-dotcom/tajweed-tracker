@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Таджвид — Журнал учителя</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body class="dark">
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="app-logo">🌙</span>
+      <div>
+        <div class="app-title">Таджвид</div>
+        <div class="app-subtitle">Журнал учителя</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="sync-status" id="syncStatus" title="Статус синхронизации">
+        <span class="sync-dot" id="syncDot"></span>
+        <span class="sync-label" id="syncLabel">—</span>
+      </div>
+      <button class="icon-btn" id="settingsBtn" title="Настройки Google Sheets">⚙️</button>
+      <button class="icon-btn theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       GROUPS BAR
+  ══════════════════════════════════════════ -->
+  <section class="groups-section">
+    <div class="groups-scroll" id="groupsList">
+      <!-- group tabs injected here -->
+    </div>
+    <button class="add-group-btn" id="addGroupBtn" title="Добавить группу">＋ Группа</button>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📖</div>
+      <div class="empty-title">Нет групп</div>
+      <div class="empty-desc">Нажмите «＋ Группа», чтобы начать</div>
+    </div>
+
+    <!-- Group panel (shown when group is selected) -->
+    <div class="group-panel hidden" id="groupPanel">
+
+      <!-- Group header -->
+      <div class="group-header">
+        <div class="group-name-wrap">
+          <h2 class="group-name" id="groupNameDisplay"></h2>
+          <button class="icon-btn small" id="deleteGroupBtn" title="Удалить группу">🗑</button>
+        </div>
+        <button class="btn btn-secondary" id="addStudentBtn">＋ Ученик</button>
+      </div>
+
+      <!-- No students -->
+      <div class="empty-state small hidden" id="noStudents">
+        <div class="empty-icon">🧒</div>
+        <div class="empty-title">Нет учеников</div>
+        <div class="empty-desc">Добавьте первого ученика</div>
+      </div>
+
+      <!-- TABLE WRAPPER -->
+      <div class="table-wrapper" id="tableWrapper">
+        <table class="lesson-table" id="lessonTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Add lesson button + snapshot -->
+      <div class="add-lesson-row" id="addLessonRow">
+        <button class="btn btn-snapshot" id="snapshotBtn" title="Сохранить таблицу как изображение">📸 Снимок</button>
+        <button class="btn btn-primary" id="addLessonBtn">＋ Урок</button>
+      </div>
+
+      <!-- GAME SECTION —— injected by gamification.js -->
+      <div id="gameSectionContainer"></div>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       MODALS
+  ══════════════════════════════════════════ -->
+
+  <!-- Add Group Modal -->
+  <div class="modal-overlay hidden" id="addGroupModal">
+    <div class="modal">
+      <div class="modal-title">Новая группа</div>
+      <input class="modal-input" id="newGroupName" type="text" placeholder="Название группы…" maxlength="40" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelAddGroup">Отмена</button>
+        <button class="btn btn-primary" id="confirmAddGroup">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Student Modal -->
+  <div class="modal-overlay hidden" id="addStudentModal">
+    <div class="modal">
+      <div class="modal-title">Новый ученик</div>
+      <input class="modal-input" id="newStudentName" type="text" placeholder="Имя ученика…" maxlength="40" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelAddStudent">Отмена</button>
+        <button class="btn btn-primary" id="confirmAddStudent">Добавить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark Picker Modal -->
+  <div class="modal-overlay hidden" id="markModal">
+    <div class="modal mark-modal">
+      <div class="modal-title" id="markModalTitle">Выберите отметку</div>
+      <div class="mark-grid">
+        <button class="mark-option" data-mark="⭐">
+          <span class="mark-emoji">⭐</span>
+          <span class="mark-label">Выполнил</span>
+        </button>
+        <button class="mark-option" data-mark="🌟">
+          <span class="mark-emoji">🌟</span>
+          <span class="mark-label">Отлично</span>
+        </button>
+        <button class="mark-option" data-mark="🏆">
+          <span class="mark-emoji">🏆</span>
+          <span class="mark-label">Перевыполнил</span>
+        </button>
+        <button class="mark-option" data-mark="❌">
+          <span class="mark-emoji">❌</span>
+          <span class="mark-label">Не выполнил</span>
+        </button>
+        <button class="mark-option mark-clear" data-mark="">
+          <span class="mark-emoji">○</span>
+          <span class="mark-label">Очистить</span>
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelMark">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Student Confirm -->
+  <div class="modal-overlay hidden" id="deleteStudentModal">
+    <div class="modal">
+      <div class="modal-title">Удалить ученика?</div>
+      <div class="modal-desc" id="deleteStudentDesc"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelDeleteStudent">Отмена</button>
+        <button class="btn btn-danger" id="confirmDeleteStudent">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Group Confirm -->
+  <div class="modal-overlay hidden" id="deleteGroupModal">
+    <div class="modal">
+      <div class="modal-title">Удалить группу?</div>
+      <div class="modal-desc" id="deleteGroupDesc"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelDeleteGroup">Отмена</button>
+        <button class="btn btn-danger" id="confirmDeleteGroup">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Settings / Google Sheets Modal -->
+  <div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal">
+      <div class="modal-title">⚙️ Подключение Google Sheets</div>
+      <div class="modal-desc">Вставьте URL вашего Google Apps Script Web App:</div>
+      <input class="modal-input" id="scriptUrlInput" type="url"
+        placeholder="https://script.google.com/macros/s/…/exec" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelSettings">Отмена</button>
+        <button class="btn btn-secondary" id="testConnection">Проверить</button>
+        <button class="btn btn-primary" id="saveSettings">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="gamification.js"></script>
+  <script src="snapshot.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
