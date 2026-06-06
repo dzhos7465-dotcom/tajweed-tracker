@@ -871,3 +871,63 @@ body.dark::before {
   color: var(--gold);
   background: var(--gold-glow);
 }
+
+/* ══════════════════════════════════════════════
+   RATING GROUPS — v5
+══════════════════════════════════════════════ */
+.rating-group {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.rg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.rg-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text2);
+}
+.rg-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+/* Цветные акценты по позиции группы */
+.rating-group.has-stars.gi-0 .rg-header { background: linear-gradient(90deg, var(--gold-glow), var(--bg3)); border-left: 3px solid var(--gold); }
+.rating-group.has-stars.gi-0 .rg-label  { color: var(--gold); }
+.rating-group.has-stars.gi-1 .rg-header { border-left: 3px solid var(--gold2); }
+.rating-group.has-stars.gi-1 .rg-label  { color: var(--gold2); }
+.rating-group.has-stars.gi-2 .rg-header { border-left: 3px solid var(--text3); }
+.rating-group.no-stars-group .rg-label  { color: var(--text3); }
+.rating-group.no-stars-group             { opacity: 0.7; }
+
+.rg-students {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--surface);
+}
+
+.rg-student {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px 5px 8px;
+  font-size: 0.82rem;
+}
+.rg-icon   { font-size: 14px; line-height: 1; }
+.rg-name   { font-weight: 700; color: var(--text); }
+.rg-streak { font-size: 0.72rem; color: #ff8c42; font-weight: 700; }

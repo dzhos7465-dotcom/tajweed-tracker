@@ -147,10 +147,41 @@ function renderGameSection() {
 // ══════════════════════════════════════════════
 
 function renderWeeklyRating(enriched) {
-  const sorted = [...enriched].sort((a, b) => b.weeklyStars - a.weeklyStars);
-  const top3   = sorted.slice(0, 3);
-  const medals = ['🥇', '🥈', '🥉'];
-  const hasStar = sorted.some(s => s.weeklyStars > 0);
+  // Группируем по weeklyStars
+  const groupMap = {};
+  enriched.forEach(s => {
+    const key = s.weeklyStars;
+    if (!groupMap[key]) groupMap[key] = [];
+    groupMap[key].push(s);
+  });
+  const sortedKeys = Object.keys(groupMap).map(Number).sort((a, b) => b - a);
+  const groups = sortedKeys.map(k => ({ stars: k, students: groupMap[k] }));
+  const hasAny = enriched.some(s => s.weeklyStars > 0);
+
+  const groupsHtml = groups.map((g, gi) => {
+    const hasStars  = g.stars > 0;
+    const starsText = hasStars
+      ? `${'⭐'.repeat(Math.min(g.stars, 7))} ${g.stars} ${g.stars === 1 ? 'звезда' : g.stars < 5 ? 'звезды' : 'звёзд'}`
+      : '— Пока нет звёзд';
+
+    const namesHtml = g.students.map(s => `
+      <div class="rg-student">
+        <span class="rg-icon">${s.level.icon}</span>
+        <span class="rg-name">${escapeHtml(s.name)}</span>
+        ${s.streak > 0 ? `<span class="rg-streak">🔥${s.streak}</span>` : ''}
+      </div>
+    `).join('');
+
+    return `
+      <div class="rating-group ${hasStars ? 'has-stars' : 'no-stars-group'} gi-${Math.min(gi,3)}">
+        <div class="rg-header">
+          <span class="rg-label">${starsText}</span>
+          <span class="rg-count">${g.students.length} уч.</span>
+        </div>
+        <div class="rg-students">${namesHtml}</div>
+      </div>
+    `;
+  }).join('');
 
   return `
     <div class="weekly-rating">
@@ -158,21 +189,7 @@ function renderWeeklyRating(enriched) {
         <div class="section-label">🏅 Рейтинг недели</div>
         <button class="btn btn-snap-small" id="ratingSnapshotBtn" onclick="takeRatingSnapshot()">📊 Снимок рейтинга</button>
       </div>
-      <div class="rating-list">
-        ${sorted.map((s, i) => `
-          <div class="rating-row ${i < 3 ? 'top' : ''}">
-            <span class="rating-rank">${i < 3 ? medals[i] : `${i+1}`}</span>
-            <span class="rating-name">${escapeHtml(s.name)}</span>
-            <span class="rating-stars">
-              ${s.weeklyStars > 0
-                ? `<span class="star-pip">${'⭐'.repeat(Math.min(s.weeklyStars, 10))}</span>`
-                : '<span class="no-stars">—</span>'}
-            </span>
-            <span class="rating-count">${s.weeklyStars} ⭐</span>
-          </div>
-        `).join('')}
-        ${!hasStar ? '<div class="rating-empty">Пока нет отметок за последние уроки</div>' : ''}
-      </div>
+      ${!hasAny ? '<div class="rating-empty">Пока нет отметок за последние уроки</div>' : groupsHtml}
     </div>
   `;
 }
