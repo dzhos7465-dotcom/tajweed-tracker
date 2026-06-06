@@ -580,7 +580,7 @@ async function takeStudentSnapshot(studentId) {
 }
 
 // ══════════════════════════════════════════════
-// СНИМОК РЕЙТИНГА НЕДЕЛИ
+// СНИМОК РЕЙТИНГА НЕДЕЛИ — группировка по звёздам
 // ══════════════════════════════════════════════
 
 async function takeRatingSnapshot() {
@@ -589,6 +589,190 @@ async function takeRatingSnapshot() {
     alert('Нет данных для снимка.');
     return;
   }
+
+  const btn = document.getElementById('ratingSnapshotBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Создаю…'; }
+
+  try {
+    // ── Собираем и группируем ──
+    const enriched = group.students.map(s => ({
+      ...s,
+      stars:       calcStars(s),
+      streak:      calcStreak(s),
+      level:       getLevel(calcStars(s)),
+      weeklyStars: calcWeeklyStars(s, group.lessons),
+    }));
+
+    // Группируем по weeklyStars, сортируем группы по убыванию
+    const groupMap = {};
+    enriched.forEach(s => {
+      const key = s.weeklyStars;
+      if (!groupMap[key]) groupMap[key] = [];
+      groupMap[key].push(s);
+    });
+    const sortedKeys = Object.keys(groupMap).map(Number).sort((a, b) => b - a);
+
+    // Структура: [{stars, students[]}]
+    const groups = sortedKeys.map(k => ({ stars: k, students: groupMap[k] }));
+
+    // ── Размеры ──
+    const SCALE    = 2;
+    const W        = 500;
+    const PAD      = 28;
+    const HEAD_H   = 90;
+    const FOOT_H   = 44;
+    const GRP_H    = 36;  // высота заголовка группы
+    const NAME_H   = 44;  // высота строки имён
+
+    // Считаем суммарную высоту
+    let contentH = 0;
+    groups.forEach(g => {
+      contentH += GRP_H; // заголовок группы
+      // Имена в несколько рядов по 2
+      const rows = Math.ceil(g.students.length / 2);
+      contentH += rows * NAME_H + 8;
+    });
+    const H = HEAD_H + contentH + FOOT_H + PAD;
+
+    const cv  = document.createElement('canvas');
+    cv.width  = W * SCALE;
+    cv.height = H * SCALE;
+    const ctx = cv.getContext('2d');
+    ctx.scale(SCALE, SCALE);
+
+    // ── Фон ──
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, '#12152a');
+    bgGrad.addColorStop(1, '#1a1e35');
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath();
+    ctx.rect(0, 0, W, H);
+    ctx.fill();
+
+    // ── Заголовок ──
+    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.fillStyle = '#f5c842';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏅 Рейтинг недели', W / 2, PAD + 30);
+
+    ctx.font = '13px Arial, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText(group.name + ' · ' + formatDateFull(), W / 2, PAD + 52);
+    ctx.textAlign = 'left';
+
+    // Разделитель
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, HEAD_H - 8);
+    ctx.lineTo(W - PAD, HEAD_H - 8);
+    ctx.stroke();
+
+    // ── Группы ──
+    // Цвета групп по убыванию
+    const GROUP_COLORS = ['#f5c842', '#e8a020', '#a0a0b0', '#6bcb77', '#7c6ef5'];
+    const GROUP_BG     = ['#f5c84214', '#e8a02010', '#a0a0b00c', '#6bcb7710', '#7c6ef510'];
+    const GROUP_ICONS  = ['🌟', '⭐', '○', '○', '○'];
+
+    let curY = HEAD_H;
+
+    groups.forEach((g, gi) => {
+      const color  = GROUP_COLORS[Math.min(gi, GROUP_COLORS.length - 1)];
+      const bgCol  = GROUP_BG[Math.min(gi, GROUP_BG.length - 1)];
+      const hasStars = g.stars > 0;
+
+      // Фон блока группы
+      const blockRows = Math.ceil(g.students.length / 2);
+      const blockH    = GRP_H + blockRows * NAME_H + 12;
+      ctx.fillStyle = bgCol;
+      ctx.beginPath();
+      ctx.roundRect(PAD / 2, curY + 4, W - PAD, blockH - 8, 12);
+      ctx.fill();
+
+      // Заголовок группы — звёзды
+      const starsLabel = hasStars
+        ? (g.stars === 1 ? '1 звезда' : g.stars + ' звезды')
+        : 'Пока нет звёзд';
+      const starEmoji  = hasStars ? '⭐'.repeat(Math.min(g.stars, 5)) : '—';
+
+      ctx.font = 'bold 13px Arial, sans-serif';
+      ctx.fillStyle = color;
+      ctx.fillText(starEmoji + '  ' + starsLabel, PAD + 8, curY + GRP_H / 2 + 5);
+
+      // Число учеников в группе
+      ctx.font = '11px Arial, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.textAlign = 'right';
+      ctx.fillText(g.students.length + ' уч.', W - PAD - 8, curY + GRP_H / 2 + 5);
+      ctx.textAlign = 'left';
+
+      // Разделитель под заголовком
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(PAD + 8, curY + GRP_H);
+      ctx.lineTo(W - PAD - 8, curY + GRP_H);
+      ctx.stroke();
+
+      curY += GRP_H;
+
+      // Имена — по два в ряд
+      const colW = (W - PAD * 2) / 2;
+      g.students.forEach((s, si) => {
+        const col  = si % 2;
+        const row  = Math.floor(si / 2);
+        const nx   = PAD + 8 + col * colW;
+        const ny   = curY + row * NAME_H + NAME_H / 2;
+
+        // Иконка уровня
+        ctx.font = '14px serif';
+        ctx.fillText(s.level.icon, nx, ny + 5);
+
+        // Имя
+        const shortName = s.name.length > 18 ? s.name.slice(0, 17) + '…' : s.name;
+        ctx.font = hasStars ? 'bold 13px Arial, sans-serif' : '12px Arial, sans-serif';
+        ctx.fillStyle = hasStars ? '#ffffff' : 'rgba(255,255,255,0.45)';
+        ctx.fillText(shortName, nx + 22, ny + 5);
+
+        // Серия 🔥
+        if (s.streak > 0) {
+          ctx.font = '10px Arial, sans-serif';
+          ctx.fillStyle = '#ff8c42';
+          ctx.fillText('🔥' + s.streak, nx + 22, ny + 19);
+        }
+      });
+
+      const blockRows2 = Math.ceil(g.students.length / 2);
+      curY += blockRows2 * NAME_H + 12;
+    });
+
+    // ── Подвал ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, curY + 8);
+    ctx.lineTo(W - PAD, curY + 8);
+    ctx.stroke();
+
+    ctx.font = '10px Arial, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌙 Таджвид — Журнал учителя', W / 2, curY + 28);
+    ctx.textAlign = 'left';
+
+    // ── Скачиваем ──
+    const link = document.createElement('a');
+    link.download = group.name + '_рейтинг_' + formatDate() + '.png';
+    link.href = cv.toDataURL('image/png', 1.0);
+    link.click();
+
+  } catch(e) {
+    console.error('Rating snapshot error:', e);
+    alert('Не удалось создать снимок рейтинга.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📊 Снимок рейтинга'; }
+  }
+}
 
   const btn = document.getElementById('ratingSnapshotBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Создаю…'; }
