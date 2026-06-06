@@ -539,27 +539,29 @@ async function takeStudentSnapshot(studentId) {
 
   if (achs.length > 0) {
     achs.slice(0, 10).forEach((a, i) => {
-      const ax = PAD + i * 36;
-      const ay = achY + 8;
+      const ax = PAD + i * 40;
+      const ay = achY + 6;
 
-      // Фон значка
-      ctx.fillStyle = 'rgba(255,255,255,0.1)';
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-      ctx.lineWidth = 1;
+      // Светлый фон значка — не тёмный, чтобы иконка была видна
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(ax, ay, 30, 30, 8);
+      ctx.roundRect(ax, ay, 34, 34, 9);
       ctx.fill();
       ctx.stroke();
 
-      // Иконка
-      ctx.font = '18px serif';
+      // Иконка крупнее и без тени
+      ctx.shadowBlur = 0;
+      ctx.font = '22px serif';
       ctx.textAlign = 'center';
-      ctx.fillText(a.icon, ax + 15, ay + 22);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(a.icon, ax + 17, ay + 25);
       ctx.textAlign = 'left';
     });
   } else {
     ctx.font = '11px Arial, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
     ctx.fillText('Достижения появятся после выполнения заданий…', PAD, achY + 24);
   }
 
@@ -645,16 +647,35 @@ async function takeRatingSnapshot() {
     ctx.lineTo(W - PAD, HEAD_H - 10);
     ctx.stroke();
 
+    // Вычисляем реальные места с учётом одинаковых результатов
+    const ranks = [];
+    let currentRank = 1;
+    enriched.forEach((s, i) => {
+      if (i === 0) {
+        ranks.push(1);
+      } else {
+        const prev = enriched[i - 1];
+        const sameResult =
+          s.weeklyStars === prev.weeklyStars &&
+          s.stars       === prev.stars &&
+          s.streak      === prev.streak;
+        ranks.push(sameResult ? ranks[i - 1] : i + 1);
+      }
+    });
+
     // Строки
     enriched.forEach((s, i) => {
-      const rowY   = HEAD_H + i * ROW_H;
-      const isTop3 = i < 3;
+      const rowY    = HEAD_H + i * ROW_H;
+      const rank    = ranks[i];
+      const isTop3  = rank <= 3;
+      const medalIdx = rank - 1; // для медали нужен индекс 0,1,2
 
       // Фон строки
       if (isTop3) {
         const rowGrad = ctx.createLinearGradient(0, rowY, W, rowY);
-        const gold = ['#f5c84218', '#e0a01018', '#c0c0c018'];
-        rowGrad.addColorStop(0, gold[i]);
+        const gold = ['#f5c84222', '#e0a01018', '#c0c0c014'];
+        const gi = Math.min(medalIdx, 2);
+        rowGrad.addColorStop(0, gold[gi]);
         rowGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = rowGrad;
       } else {
@@ -663,10 +684,11 @@ async function takeRatingSnapshot() {
       fillRoundRect(ctx, PAD / 2, rowY + 3, W - PAD, ROW_H - 6, 10);
 
       // Медаль / номер
-      ctx.font = isTop3 ? '22px serif' : 'bold 14px Nunito, Arial, sans-serif';
-      ctx.fillStyle = isTop3 ? '#ffffff' : 'rgba(255,255,255,0.35)';
+      const showMedal = isTop3 && medalIdx <= 2;
+      ctx.font = showMedal ? '22px serif' : 'bold 14px Arial, sans-serif';
+      ctx.fillStyle = showMedal ? '#ffffff' : 'rgba(255,255,255,0.35)';
       ctx.textAlign = 'center';
-      ctx.fillText(isTop3 ? MEDALS[i] : String(i + 1), PAD + 12, rowY + ROW_H / 2 + 7);
+      ctx.fillText(showMedal ? MEDALS[medalIdx] : String(rank), PAD + 12, rowY + ROW_H / 2 + 7);
       ctx.textAlign = 'left';
 
       // Иконка уровня
