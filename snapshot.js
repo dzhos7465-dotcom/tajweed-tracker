@@ -4,7 +4,25 @@
    Зависит от: html2canvas (cdnjs), state, getActiveGroup()
 ══════════════════════════════════════════════ */
 
+// ── Таблица: прямая кнопка ──
 document.getElementById('snapshotBtn').addEventListener('click', takeSnapshot);
+
+// ── Динамические кнопки (рейтинг и карточки создаются через innerHTML) ──
+// Используем делегирование событий на document
+document.addEventListener('click', function(e) {
+  // Кнопка снимка рейтинга
+  if (e.target && e.target.id === 'ratingSnapshotBtn') {
+    takeRatingSnapshot();
+  }
+  // Кнопка снимка карточки ученика
+  if (e.target && e.target.classList.contains('btn-snap-card')) {
+    const card = e.target.closest('.student-card');
+    if (card) {
+      const studentId = card.dataset.studentId;
+      if (studentId) takeStudentSnapshot(studentId);
+    }
+  }
+});
 
 async function takeSnapshot() {
   const group = getActiveGroup();
@@ -21,11 +39,7 @@ async function takeSnapshot() {
     // ── Строим отдельный DOM-узел для рендера ──
     const canvas = await buildSnapshotCanvas(group);
 
-    // ── Скачиваем PNG ──
-    const link = document.createElement('a');
-    link.download = `${group.name}_таджвид_${formatDate()}.png`;
-    link.href = canvas.toDataURL('image/png', 1.0);
-    link.click();
+    downloadCanvas(canvas, `${group.name}_таджвид_${formatDate()}.png`);
   } catch (e) {
     console.error('Snapshot error:', e);
     alert('Не удалось создать снимок. Попробуйте ещё раз.');
@@ -313,6 +327,31 @@ function strokeRoundRect(ctx, x, y, w, h, r) {
   ctx.stroke();
 }
 
+
+// ══════════════════════════════════════════════
+// УНИВЕРСАЛЬНОЕ СКАЧИВАНИЕ — работает на GitHub Pages
+// ══════════════════════════════════════════════
+function downloadCanvas(canvas, filename) {
+  try {
+    // Метод 1: стандартный через <a>
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch(e) {
+    // Метод 2: открыть в новой вкладке (пользователь сохранит вручную)
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<img src="' + canvas.toDataURL('image/png', 1.0) + '" style="max-width:100%">');
+      win.document.title = filename;
+    } else {
+      alert('Разрешите всплывающие окна для этого сайта, затем попробуйте снова.');
+    }
+  }
+}
+
 // ══════════════════════════════════════════════
 // УТИЛИТЫ
 // ══════════════════════════════════════════════
@@ -574,9 +613,7 @@ async function takeStudentSnapshot(studentId) {
 
   // ── СКАЧИВАЕМ ──
   const link = document.createElement('a');
-  link.download = student.name + '_прогресс_' + formatDate() + '.png';
-  link.href = cv.toDataURL('image/png', 1.0);
-  link.click();
+  downloadCanvas(cv, student.name + '_прогресс_' + formatDate() + '.png');
 }
 
 // ══════════════════════════════════════════════
@@ -762,9 +799,7 @@ async function takeRatingSnapshot() {
 
     // ── Скачиваем ──
     const link = document.createElement('a');
-    link.download = group.name + '_рейтинг_' + formatDate() + '.png';
-    link.href = cv.toDataURL('image/png', 1.0);
-    link.click();
+    downloadCanvas(cv, group.name + '_рейтинг_' + formatDate() + '.png');
 
   } catch(e) {
     console.error('Rating snapshot error:', e);
@@ -930,10 +965,7 @@ async function takeRatingSnapshot() {
     ctx.fillText('🌙 Таджвид — Журнал учителя', W / 2, footY + 22);
     ctx.textAlign = 'left';
 
-    const link = document.createElement('a');
-    link.download = `${group.name}_рейтинг_${formatDate()}.png`;
-    link.href = cv.toDataURL('image/png', 1.0);
-    link.click();
+    downloadCanvas(cv, `${group.name}_рейтинг_${formatDate()}.png`);
 
   } catch(e) {
     console.error('Rating snapshot error:', e);

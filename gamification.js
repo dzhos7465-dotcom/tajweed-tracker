@@ -187,7 +187,7 @@ function renderWeeklyRating(enriched) {
     <div class="weekly-rating">
       <div class="rating-header">
         <div class="section-label">🏅 Рейтинг недели</div>
-        <button class="btn btn-snap-small" id="ratingSnapshotBtn" onclick="takeRatingSnapshot()">📊 Снимок рейтинга</button>
+        <button class="btn btn-snap-small" id="ratingSnapshotBtn">📊 Снимок рейтинга</button>
       </div>
       ${!hasAny ? '<div class="rating-empty">Пока нет отметок за последние уроки</div>' : groupsHtml}
     </div>
@@ -216,7 +216,7 @@ function renderStudentCard(s) {
     : `<span class="ach-empty">Пока нет достижений</span>`;
 
   return `
-    <div class="student-card" style="--level-color:${lvl.color}">
+    <div class="student-card" style="--level-color:${lvl.color}" data-student-id="${s.id}">
       <div class="card-top">
         <div class="card-avatar" style="background: linear-gradient(135deg, ${lvl.color}33, ${lvl.color}11)">
           <span class="card-avatar-icon">${lvl.icon}</span>
@@ -257,7 +257,7 @@ function renderStudentCard(s) {
       <div class="card-achievements">
         ${achHtml}
       </div>
-      <button class="btn btn-snap-card" onclick="takeStudentSnapshot('${s.id}')">📸 Снимок прогресса</button>
+      <button class="btn btn-snap-card">📸 Снимок прогресса</button>
     </div>
   `;
 }
