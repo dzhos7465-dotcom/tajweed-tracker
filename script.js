@@ -213,7 +213,7 @@ function renderTable(group) {
 
   // First TH: "Ученик"
   const thName = document.createElement('th');
-  thName.textContent = 'Ученик';
+  thName.textContent = 'Имя';
   headerRow.appendChild(thName);
 
   // Lesson headers
@@ -238,7 +238,10 @@ function renderTable(group) {
     tdName.innerHTML = `
       <div class="student-name-inner">
         <span>${escapeHtml(student.name)}</span>
-        <button class="delete-student-btn" data-id="${student.id}" title="Удалить">✕</button>
+        <div class="student-actions">
+          <button class="edit-student-btn" data-id="${student.id}" title="Редактировать">✏️</button>
+          <button class="delete-student-btn" data-id="${student.id}" title="Удалить">✕</button>
+        </div>
       </div>
     `;
     tr.appendChild(tdName);
@@ -273,6 +276,14 @@ function renderTable(group) {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       openDeleteStudentModal(btn.dataset.id);
+    });
+  });
+
+  // Edit student listeners
+  tbody.querySelectorAll('.edit-student-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEditStudentModal(btn.dataset.id);
     });
   });
 }
@@ -443,6 +454,21 @@ document.getElementById('addLessonBtn').addEventListener('click', () => {
   }, 50);
 });
 
+// ── REMOVE LESSON ─────────────────────────────
+document.getElementById('removeLessonBtn').addEventListener('click', () => {
+  const group = getActiveGroup();
+  if (!group || group.lessons === 0) return;
+  // Предупреждаем если есть отметки в последнем уроке
+  const hasMarks = group.students.some(s => s.marks && s.marks[group.lessons]);
+  if (hasMarks) {
+    if (!confirm(`Удалить Урок ${group.lessons}? Все отметки этого урока будут удалены.`)) return;
+    group.students.forEach(s => { if (s.marks) delete s.marks[group.lessons]; });
+  }
+  group.lessons -= 1;
+  save();
+  render();
+});
+
 // ══════════════════════════════════════════════
 // MARK MODAL
 // ══════════════════════════════════════════════
@@ -496,6 +522,83 @@ document.querySelectorAll('.mark-option').forEach(btn => {
     save();
     render();
   });
+});
+
+// ══════════════════════════════════════════════
+// EDIT STUDENT MODAL
+// ══════════════════════════════════════════════
+let pendingEditStudentId = null;
+
+function openEditStudentModal(studentId) {
+  const group = getActiveGroup();
+  if (!group) return;
+  const student = group.students.find(s => s.id === studentId);
+  if (!student) return;
+  pendingEditStudentId = studentId;
+  document.getElementById('editStudentName').value = student.name;
+  document.getElementById('editStudentModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('editStudentName').select(), 50);
+}
+
+document.getElementById('cancelEditStudent').addEventListener('click', () => {
+  document.getElementById('editStudentModal').classList.add('hidden');
+  pendingEditStudentId = null;
+});
+document.getElementById('editStudentModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editStudentModal')) {
+    document.getElementById('editStudentModal').classList.add('hidden');
+    pendingEditStudentId = null;
+  }
+});
+document.getElementById('confirmEditStudent').addEventListener('click', () => {
+  const name = document.getElementById('editStudentName').value.trim();
+  if (!name) { document.getElementById('editStudentName').focus(); return; }
+  const group = getActiveGroup();
+  if (!group || !pendingEditStudentId) return;
+  const student = group.students.find(s => s.id === pendingEditStudentId);
+  if (student) student.name = name;
+  document.getElementById('editStudentModal').classList.add('hidden');
+  pendingEditStudentId = null;
+  save(); render();
+});
+document.getElementById('editStudentName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('confirmEditStudent').click();
+});
+
+// ══════════════════════════════════════════════
+// SORT STUDENTS
+// ══════════════════════════════════════════════
+document.getElementById('sortStudentsBtn').addEventListener('click', () => {
+  const group = getActiveGroup();
+  if (!group) return;
+  group.students.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  save(); render();
+});
+
+// ══════════════════════════════════════════════
+// BULK ADD STUDENTS
+// ══════════════════════════════════════════════
+document.getElementById('bulkAddBtn').addEventListener('click', () => {
+  document.getElementById('bulkNamesInput').value = '';
+  document.getElementById('bulkAddModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('bulkNamesInput').focus(), 50);
+});
+document.getElementById('cancelBulkAdd').addEventListener('click', () => {
+  document.getElementById('bulkAddModal').classList.add('hidden');
+});
+document.getElementById('bulkAddModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('bulkAddModal'))
+    document.getElementById('bulkAddModal').classList.add('hidden');
+});
+document.getElementById('confirmBulkAdd').addEventListener('click', () => {
+  const raw = document.getElementById('bulkNamesInput').value;
+  const names = raw.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+  if (names.length === 0) { document.getElementById('bulkNamesInput').focus(); return; }
+  const group = getActiveGroup();
+  if (!group) return;
+  names.forEach(name => group.students.push({ id: uid(), name, marks: {} }));
+  document.getElementById('bulkAddModal').classList.add('hidden');
+  save(); render();
 });
 
 // ══════════════════════════════════════════════

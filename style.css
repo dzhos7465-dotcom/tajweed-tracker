@@ -931,3 +931,55 @@ body.dark::before {
 .rg-icon   { font-size: 14px; line-height: 1; }
 .rg-name   { font-weight: 700; color: var(--text); }
 .rg-streak { font-size: 0.72rem; color: #ff8c42; font-weight: 700; }
+
+/* ══════════════════════════════════════════════
+   ДОРАБОТКИ v5 — редактирование, сортировка, список
+══════════════════════════════════════════════ */
+
+/* Группа кнопок в шапке группы */
+.group-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Маленькие кнопки */
+.btn-small {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+}
+
+/* Кнопки действий ученика */
+.student-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.lesson-table tbody tr:hover .student-actions { opacity: 1; }
+
+.edit-student-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text3);
+  padding: 2px 3px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.edit-student-btn:hover { color: var(--accent); }
+
+/* Textarea в модалке */
+.modal-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+}
+
+@media (max-width: 600px) {
+  .group-actions { gap: 6px; }
+  .btn-small { padding: 6px 10px; font-size: 0.75rem; }
+}

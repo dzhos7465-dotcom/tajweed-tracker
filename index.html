@@ -177,6 +177,34 @@
   </div>
 
 
+
+  <!-- Edit Student Modal -->
+  <div class="modal-overlay hidden" id="editStudentModal">
+    <div class="modal">
+      <div class="modal-title">✏️ Редактировать имя</div>
+      <input class="modal-input" id="editStudentName" type="text" placeholder="Имя ученика…" maxlength="40" />
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelEditStudent">Отмена</button>
+        <button class="btn btn-primary" id="confirmEditStudent">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Add Modal -->
+  <div class="modal-overlay hidden" id="bulkAddModal">
+    <div class="modal">
+      <div class="modal-title">📋 Добавить список</div>
+      <div class="modal-desc">Вставьте имена — каждое с новой строки:</div>
+      <textarea class="modal-input modal-textarea" id="bulkNamesInput"
+        placeholder="Айша Иванова&#10;Марьям Петрова&#10;Зайнаб Сидорова…"
+        rows="6" maxlength="2000"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelBulkAdd">Отмена</button>
+        <button class="btn btn-primary" id="confirmBulkAdd">Добавить</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Settings / Google Sheets Modal -->
   <div class="modal-overlay hidden" id="settingsModal">
     <div class="modal">
