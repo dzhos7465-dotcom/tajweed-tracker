@@ -62,7 +62,11 @@
           <h2 class="group-name" id="groupNameDisplay"></h2>
           <button class="icon-btn small" id="deleteGroupBtn" title="Удалить группу">🗑</button>
         </div>
-        <button class="btn btn-secondary" id="addStudentBtn">＋ Ученик</button>
+        <div class="group-actions">
+          <button class="btn btn-ghost btn-small" id="sortStudentsBtn" title="Сортировать по алфавиту">🔤 А→Я</button>
+          <button class="btn btn-ghost btn-small" id="bulkAddBtn" title="Добавить список имён">📋 Список</button>
+          <button class="btn btn-secondary" id="addStudentBtn">＋ Ученик</button>
+        </div>
       </div>
 
       <!-- No students -->
@@ -83,6 +87,7 @@
       <!-- Add lesson button + snapshot -->
       <div class="add-lesson-row" id="addLessonRow">
         <button class="btn btn-snapshot" id="snapshotBtn" title="Сохранить таблицу как изображение">📸 Снимок</button>
+        <button class="btn btn-ghost btn-small" id="removeLessonBtn" title="Удалить последний урок">− Урок</button>
         <button class="btn btn-primary" id="addLessonBtn">＋ Урок</button>
       </div>
 
