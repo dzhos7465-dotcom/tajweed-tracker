@@ -983,3 +983,19 @@ body.dark::before {
   .group-actions { gap: 6px; }
   .btn-small { padding: 6px 10px; font-size: 0.75rem; }
 }
+
+/* ══════════════════════════════════════════════
+   LANG TOGGLE BUTTON — i18n
+══════════════════════════════════════════════ */
+.lang-btn {
+  font-size: 0.7rem !important;
+  font-weight: 900 !important;
+  font-family: 'Nunito', sans-serif;
+  letter-spacing: 0.5px;
+  color: var(--gold) !important;
+  border-color: var(--gold) !important;
+  min-width: 38px;
+}
+.lang-btn:hover {
+  background: var(--gold-glow) !important;
+}

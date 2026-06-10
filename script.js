@@ -52,7 +52,7 @@ async function gsRequest(payload) {
 // Загрузить все данные из Google Sheets
 async function gsLoad() {
   if (!getScriptUrl()) return;
-  setSyncStatus('syncing', 'Загрузка…');
+  setSyncStatus('syncing', typeof t==='function'?t('syncLoading')||'Загрузка…':'Загрузка…');
   try {
     const data = await gsRequest({ action: 'load' });
     if (data && data.groups) {
@@ -68,10 +68,10 @@ async function gsLoad() {
       save(); // обновляем localStorage
       render();
     }
-    setSyncStatus('ok', 'Синхронизировано');
+    setSyncStatus('ok', typeof t==='function'?t('syncDone')||'Синхронизировано':'Синхронизировано');
   } catch(e) {
     console.error('gsLoad error:', e);
-    setSyncStatus('error', 'Нет связи');
+    setSyncStatus('error', typeof t==='function'?t('syncError')||'Нет связи':'Нет связи');
   }
 }
 
@@ -82,13 +82,13 @@ async function gsSync() {
   // Дебаунс: ждём 800мс после последнего изменения
   clearTimeout(syncTimer);
   syncTimer = setTimeout(async () => {
-    setSyncStatus('syncing', 'Сохранение…');
+    setSyncStatus('syncing', typeof t==='function'?t('syncSaving')||'Сохранение…':'Сохранение…');
     try {
       await gsRequest({ action: 'save', groups: state.groups });
-      setSyncStatus('ok', 'Сохранено');
+      setSyncStatus('ok', typeof t==='function'?t('syncSaved')||'Сохранено':'Сохранено');
     } catch(e) {
       console.error('gsSync error:', e);
-      setSyncStatus('error', 'Ошибка сохранения');
+      setSyncStatus('error', typeof t==='function'?t('syncError')||'Ошибка':'Ошибка');
     }
   }, 800);
 }
@@ -213,14 +213,14 @@ function renderTable(group) {
 
   // First TH: "Ученик"
   const thName = document.createElement('th');
-  thName.textContent = 'Имя';
+  thName.textContent = typeof t === 'function' ? t('tableNameHeader') : 'Имя';
   headerRow.appendChild(thName);
 
   // Lesson headers
   for (let i = 1; i <= group.lessons; i++) {
     const th = document.createElement('th');
     th.className = 'lesson-header';
-    th.textContent = `Урок ${i}`;
+    th.textContent = `${typeof t === 'function' ? t('lessonPrefix') : 'Урок'} ${i}`;
     headerRow.appendChild(th);
   }
 
@@ -461,7 +461,10 @@ document.getElementById('removeLessonBtn').addEventListener('click', () => {
   // Предупреждаем если есть отметки в последнем уроке
   const hasMarks = group.students.some(s => s.marks && s.marks[group.lessons]);
   if (hasMarks) {
-    if (!confirm(`Удалить Урок ${group.lessons}? Все отметки этого урока будут удалены.`)) return;
+    const msg = typeof t === 'function'
+      ? `${t('confirmRemoveLesson')} ${group.lessons}${t('confirmRemoveLessonSuffix')}`
+      : `Удалить Урок ${group.lessons}? Все отметки этого урока будут удалены.`;
+    if (!confirm(msg)) return;
     group.students.forEach(s => { if (s.marks) delete s.marks[group.lessons]; });
   }
   group.lessons -= 1;
@@ -640,13 +643,13 @@ testConnection.addEventListener('click', async () => {
   // Временно используем введённый URL для теста
   const prevUrl = getScriptUrl();
   localStorage.setItem(GS_CONFIG_KEY, url);
-  setSyncStatus('syncing', 'Проверка…');
+  setSyncStatus('syncing', typeof t==='function'?t('syncChecking')||'Проверка…':'Проверка…');
   settingsModal.classList.add('hidden');
 
   try {
     const data = await gsRequest({ action: 'ping' });
     if (data && data.ok) {
-      setSyncStatus('ok', 'Подключено ✓');
+      setSyncStatus('ok', typeof t==='function'?t('syncConnected')||'Подключено ✓':'Подключено ✓');
       alert('✅ Соединение успешно! Google Sheets подключён.');
     } else {
       throw new Error('Неверный ответ');
@@ -669,7 +672,7 @@ render();
 
 // Показать статус если URL уже сохранён
 if (getScriptUrl()) {
-  setSyncStatus('syncing', 'Загрузка…');
+  setSyncStatus('syncing', typeof t==='function'?t('syncLoading')||'Загрузка…':'Загрузка…');
   gsLoad(); // загружаем свежие данные из Sheets при открытии
 } else {
   setSyncStatus('', '—');

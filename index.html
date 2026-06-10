@@ -17,17 +17,17 @@
     <div class="header-left">
       <span class="app-logo">🌙</span>
       <div>
-        <div class="app-title">Таджвид</div>
-        <div class="app-subtitle">Журнал учителя</div>
+        <div class="app-title" data-i18n="appTitle">Таджвид</div>
+        <div class="app-subtitle" data-i18n="appSubtitle">Журнал учителя</div>
       </div>
     </div>
     <div class="header-right">
-      <div class="sync-status" id="syncStatus" title="Статус синхронизации">
+      <div class="sync-status" id="syncStatus" data-i18n-title="syncTitle" title="Статус синхронизации">
         <span class="sync-dot" id="syncDot"></span>
         <span class="sync-label" id="syncLabel">—</span>
       </div>
-      <button class="icon-btn" id="settingsBtn" title="Настройки Google Sheets">⚙️</button>
-      <button class="icon-btn theme-toggle" id="themeToggle" title="Сменить тему">☀️</button>
+      <button class="icon-btn" id="settingsBtn" data-i18n-title="settingsTitle" title="Настройки Google Sheets">⚙️</button>
+      <button class="icon-btn theme-toggle" id="themeToggle" data-i18n-title="themeToggle" title="Сменить тему">☀️</button>
     </div>
   </header>
 
@@ -38,7 +38,7 @@
     <div class="groups-scroll" id="groupsList">
       <!-- group tabs injected here -->
     </div>
-    <button class="add-group-btn" id="addGroupBtn" title="Добавить группу">＋ Группа</button>
+    <button class="add-group-btn" id="addGroupBtn" title="Добавить группу" data-i18n="addGroup">＋ Группа</button>
   </section>
 
   <!-- ══════════════════════════════════════════
@@ -49,8 +49,8 @@
     <!-- Empty state -->
     <div class="empty-state" id="emptyState">
       <div class="empty-icon">📖</div>
-      <div class="empty-title">Нет групп</div>
-      <div class="empty-desc">Нажмите «＋ Группа», чтобы начать</div>
+      <div class="empty-title" data-i18n="noGroups">Нет групп</div>
+      <div class="empty-desc" data-i18n="noGroupsDesc">Нажмите «＋ Группа», чтобы начать</div>
     </div>
 
     <!-- Group panel (shown when group is selected) -->
@@ -60,20 +60,20 @@
       <div class="group-header">
         <div class="group-name-wrap">
           <h2 class="group-name" id="groupNameDisplay"></h2>
-          <button class="icon-btn small" id="deleteGroupBtn" title="Удалить группу">🗑</button>
+          <button class="icon-btn small" id="deleteGroupBtn" data-i18n-title="deleteGroup" title="Удалить группу">🗑</button>
         </div>
         <div class="group-actions">
-          <button class="btn btn-ghost btn-small" id="sortStudentsBtn" title="Сортировать по алфавиту">🔤 А→Я</button>
-          <button class="btn btn-ghost btn-small" id="bulkAddBtn" title="Добавить список имён">📋 Список</button>
-          <button class="btn btn-secondary" id="addStudentBtn">＋ Ученик</button>
+          <button class="btn btn-ghost btn-small" id="sortStudentsBtn" title="Сортировать по алфавиту" data-i18n="sortStudents">🔤 А→Я</button>
+          <button class="btn btn-ghost btn-small" id="bulkAddBtn" title="Добавить список имён" data-i18n="bulkAdd">📋 Список</button>
+          <button class="btn btn-secondary" id="addStudentBtn" data-i18n="addStudent">＋ Ученик</button>
         </div>
       </div>
 
       <!-- No students -->
       <div class="empty-state small hidden" id="noStudents">
         <div class="empty-icon">🧒</div>
-        <div class="empty-title">Нет учеников</div>
-        <div class="empty-desc">Добавьте первого ученика</div>
+        <div class="empty-title" data-i18n="noStudents">Нет учеников</div>
+        <div class="empty-desc" data-i18n="noStudentsDesc">Добавьте первого ученика</div>
       </div>
 
       <!-- TABLE WRAPPER -->
@@ -86,9 +86,9 @@
 
       <!-- Add lesson button + snapshot -->
       <div class="add-lesson-row" id="addLessonRow">
-        <button class="btn btn-snapshot" id="snapshotBtn" title="Сохранить таблицу как изображение">📸 Снимок</button>
-        <button class="btn btn-ghost btn-small" id="removeLessonBtn" title="Удалить последний урок">− Урок</button>
-        <button class="btn btn-primary" id="addLessonBtn">＋ Урок</button>
+        <button class="btn btn-snapshot" id="snapshotBtn" data-i18n-title="snapshotBtn" title="Сохранить таблицу как изображение" data-i18n="snapshotBtn">📸 Снимок</button>
+        <button class="btn btn-ghost btn-small" id="removeLessonBtn" data-i18n-title="removeLesson" title="Удалить последний урок" data-i18n="removeLesson">− Урок</button>
+        <button class="btn btn-primary" id="addLessonBtn" data-i18n="addLesson">＋ Урок</button>
       </div>
 
       <!-- GAME SECTION —— injected by gamification.js -->
@@ -104,11 +104,11 @@
   <!-- Add Group Modal -->
   <div class="modal-overlay hidden" id="addGroupModal">
     <div class="modal">
-      <div class="modal-title">Новая группа</div>
-      <input class="modal-input" id="newGroupName" type="text" placeholder="Название группы…" maxlength="40" />
+      <div class="modal-title" data-i18n="modalNewGroup">Новая группа</div>
+      <input class="modal-input" id="newGroupName" type="text" data-i18n-placeholder="placeholderGroup" placeholder="Название группы…" maxlength="40" />
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelAddGroup">Отмена</button>
-        <button class="btn btn-primary" id="confirmAddGroup">Создать</button>
+        <button class="btn btn-ghost" id="cancelAddGroup" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-primary" id="confirmAddGroup" data-i18n="btnCreate">Создать</button>
       </div>
     </div>
   </div>
@@ -116,11 +116,11 @@
   <!-- Add Student Modal -->
   <div class="modal-overlay hidden" id="addStudentModal">
     <div class="modal">
-      <div class="modal-title">Новый ученик</div>
-      <input class="modal-input" id="newStudentName" type="text" placeholder="Имя ученика…" maxlength="40" />
+      <div class="modal-title" data-i18n="modalNewStudent">Новый ученик</div>
+      <input class="modal-input" id="newStudentName" type="text" data-i18n-placeholder="placeholderStudent" placeholder="Имя ученика…" maxlength="40" />
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelAddStudent">Отмена</button>
-        <button class="btn btn-primary" id="confirmAddStudent">Добавить</button>
+        <button class="btn btn-ghost" id="cancelAddStudent" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-primary" id="confirmAddStudent" data-i18n="btnAdd">Добавить</button>
       </div>
     </div>
   </div>
@@ -128,31 +128,31 @@
   <!-- Mark Picker Modal -->
   <div class="modal-overlay hidden" id="markModal">
     <div class="modal mark-modal">
-      <div class="modal-title" id="markModalTitle">Выберите отметку</div>
+      <div class="modal-title" id="markModalTitle" data-i18n="modalMark">Выберите отметку</div>
       <div class="mark-grid">
         <button class="mark-option" data-mark="⭐">
           <span class="mark-emoji">⭐</span>
-          <span class="mark-label">Выполнил</span>
+          <span class="mark-label" data-i18n="markDone">Выполнил</span>
         </button>
         <button class="mark-option" data-mark="🌟">
           <span class="mark-emoji">🌟</span>
-          <span class="mark-label">Отлично</span>
+          <span class="mark-label" data-i18n="markExcellent">Отлично</span>
         </button>
         <button class="mark-option" data-mark="🏆">
           <span class="mark-emoji">🏆</span>
-          <span class="mark-label">Перевыполнил</span>
+          <span class="mark-label" data-i18n="markExceeded">Перевыполнил</span>
         </button>
         <button class="mark-option" data-mark="❌">
           <span class="mark-emoji">❌</span>
-          <span class="mark-label">Не выполнил</span>
+          <span class="mark-label" data-i18n="markFailed">Не выполнил</span>
         </button>
         <button class="mark-option mark-clear" data-mark="">
           <span class="mark-emoji">○</span>
-          <span class="mark-label">Очистить</span>
+          <span class="mark-label" data-i18n="markClear">Очистить</span>
         </button>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelMark">Отмена</button>
+        <button class="btn btn-ghost" id="cancelMark" data-i18n="btnCancel">Отмена</button>
       </div>
     </div>
   </div>
@@ -160,11 +160,11 @@
   <!-- Delete Student Confirm -->
   <div class="modal-overlay hidden" id="deleteStudentModal">
     <div class="modal">
-      <div class="modal-title">Удалить ученика?</div>
+      <div class="modal-title" data-i18n="modalDeleteStudent">Удалить ученика?</div>
       <div class="modal-desc" id="deleteStudentDesc"></div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelDeleteStudent">Отмена</button>
-        <button class="btn btn-danger" id="confirmDeleteStudent">Удалить</button>
+        <button class="btn btn-ghost" id="cancelDeleteStudent" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-danger" id="confirmDeleteStudent" data-i18n="btnDelete">Удалить</button>
       </div>
     </div>
   </div>
@@ -172,11 +172,11 @@
   <!-- Delete Group Confirm -->
   <div class="modal-overlay hidden" id="deleteGroupModal">
     <div class="modal">
-      <div class="modal-title">Удалить группу?</div>
+      <div class="modal-title" data-i18n="modalDeleteGroup">Удалить группу?</div>
       <div class="modal-desc" id="deleteGroupDesc"></div>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelDeleteGroup">Отмена</button>
-        <button class="btn btn-danger" id="confirmDeleteGroup">Удалить</button>
+        <button class="btn btn-ghost" id="cancelDeleteGroup" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-danger" id="confirmDeleteGroup" data-i18n="btnDelete">Удалить</button>
       </div>
     </div>
   </div>
@@ -186,11 +186,11 @@
   <!-- Edit Student Modal -->
   <div class="modal-overlay hidden" id="editStudentModal">
     <div class="modal">
-      <div class="modal-title">✏️ Редактировать имя</div>
-      <input class="modal-input" id="editStudentName" type="text" placeholder="Имя ученика…" maxlength="40" />
+      <div class="modal-title" data-i18n="modalEditName">✏️ Редактировать имя</div>
+      <input class="modal-input" id="editStudentName" type="text" data-i18n-placeholder="placeholderStudent" placeholder="Имя ученика…" maxlength="40" />
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelEditStudent">Отмена</button>
-        <button class="btn btn-primary" id="confirmEditStudent">Сохранить</button>
+        <button class="btn btn-ghost" id="cancelEditStudent" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-primary" id="confirmEditStudent" data-i18n="btnSave">Сохранить</button>
       </div>
     </div>
   </div>
@@ -198,14 +198,14 @@
   <!-- Bulk Add Modal -->
   <div class="modal-overlay hidden" id="bulkAddModal">
     <div class="modal">
-      <div class="modal-title">📋 Добавить список</div>
-      <div class="modal-desc">Вставьте имена — каждое с новой строки:</div>
+      <div class="modal-title" data-i18n="modalBulkAdd">📋 Добавить список</div>
+      <div class="modal-desc" data-i18n="bulkAddDesc">Вставьте имена — каждое с новой строки:</div>
       <textarea class="modal-input modal-textarea" id="bulkNamesInput"
         placeholder="Айша Иванова&#10;Марьям Петрова&#10;Зайнаб Сидорова…"
         rows="6" maxlength="2000"></textarea>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelBulkAdd">Отмена</button>
-        <button class="btn btn-primary" id="confirmBulkAdd">Добавить</button>
+        <button class="btn btn-ghost" id="cancelBulkAdd" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-primary" id="confirmBulkAdd" data-i18n="btnAdd">Добавить</button>
       </div>
     </div>
   </div>
@@ -213,18 +213,19 @@
   <!-- Settings / Google Sheets Modal -->
   <div class="modal-overlay hidden" id="settingsModal">
     <div class="modal">
-      <div class="modal-title">⚙️ Подключение Google Sheets</div>
-      <div class="modal-desc">Вставьте URL вашего Google Apps Script Web App:</div>
+      <div class="modal-title" data-i18n="modalSettings">⚙️ Подключение Google Sheets</div>
+      <div class="modal-desc" data-i18n="settingsDesc">Вставьте URL вашего Google Apps Script Web App:</div>
       <input class="modal-input" id="scriptUrlInput" type="url"
         placeholder="https://script.google.com/macros/s/…/exec" />
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelSettings">Отмена</button>
-        <button class="btn btn-secondary" id="testConnection">Проверить</button>
-        <button class="btn btn-primary" id="saveSettings">Сохранить</button>
+        <button class="btn btn-ghost" id="cancelSettings" data-i18n="btnCancel">Отмена</button>
+        <button class="btn btn-secondary" id="testConnection" data-i18n="btnTest">Проверить</button>
+        <button class="btn btn-primary" id="saveSettings" data-i18n="btnSave">Сохранить</button>
       </div>
     </div>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="gamification.js"></script>
   <script src="snapshot.js"></script>

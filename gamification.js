@@ -10,22 +10,24 @@
 // ══════════════════════════════════════════════
 
 const LEVELS = [
-  { min: 0,   max: 9,   title: 'Начинающий',      icon: '🌱', color: '#6bcb77' },
-  { min: 10,  max: 24,  title: 'Чтец',             icon: '📖', color: '#f5c842' },
-  { min: 25,  max: 49,  title: 'Старательный чтец', icon: '⭐', color: '#f5a623' },
-  { min: 50,  max: 99,  title: 'Знаток чтения',    icon: '🌟', color: '#e040fb' },
-  { min: 100, max: Infinity, title: 'Мастер чтения', icon: '🏆', color: '#ff6b35' },
+  { min: 0,   max: 9,   titleKey: 'levelBeginner', icon: '🌱', color: '#6bcb77' },
+  { min: 10,  max: 24,  titleKey: 'levelReader',   icon: '📖', color: '#f5c842' },
+  { min: 25,  max: 49,  titleKey: 'levelDiligent', icon: '⭐', color: '#f5a623' },
+  { min: 50,  max: 99,  titleKey: 'levelExpert',   icon: '🌟', color: '#e040fb' },
+  { min: 100, max: Infinity, titleKey: 'levelMaster', icon: '🏆', color: '#ff6b35' },
 ];
+// Геттер title с учётом текущего языка
+function getLevelTitle(level) { return typeof t === 'function' ? t(level.titleKey) : level.titleKey; }
 
 const ACHIEVEMENTS = [
-  { id: 'first_star',    icon: '⭐', title: 'Первая звезда',      desc: 'Получить первую отметку',          check: s => calcStars(s) >= 1 },
-  { id: 'streak3',       icon: '🔥', title: 'Огонь!',             desc: 'Серия 3 урока подряд',             check: s => calcStreak(s) >= 3 },
-  { id: 'streak5',       icon: '🌋', title: 'Непрерывный огонь',  desc: 'Серия 5 уроков подряд',            check: s => calcStreak(s) >= 5 },
-  { id: 'perfect3',      icon: '💎', title: 'Трижды отлично',     desc: '3 отметки 🌟 подряд',              check: s => calcPerfectStreak(s) >= 3 },
-  { id: 'ten_stars',     icon: '🌠', title: 'Десятка!',           desc: 'Набрать 10 звёзд',                 check: s => calcStars(s) >= 10 },
-  { id: 'trophy',        icon: '🏆', title: 'Трофей',             desc: 'Получить отметку 🏆',              check: s => Object.values(s.marks||{}).includes('🏆') },
-  { id: 'no_miss5',      icon: '🛡',  title: 'Без пропусков',      desc: '5 выполненных уроков без ❌',      check: s => calcNoMissStreak(s) >= 5 },
-  { id: 'century',       icon: '💯', title: 'Мастер!',            desc: 'Набрать 100 звёзд',                check: s => calcStars(s) >= 100 },
+  { id: 'first_star', icon: '⭐', titleKey: 'achFirstStar', descKey: 'achFirstStarDesc', check: s => calcStars(s) >= 1 },
+  { id: 'streak3',    icon: '🔥', titleKey: 'achStreak3',   descKey: 'achStreak3Desc',   check: s => calcStreak(s) >= 3 },
+  { id: 'streak5',    icon: '🌋', titleKey: 'achStreak5',   descKey: 'achStreak5Desc',   check: s => calcStreak(s) >= 5 },
+  { id: 'perfect3',   icon: '💎', titleKey: 'achPerfect3',  descKey: 'achPerfect3Desc',  check: s => calcPerfectStreak(s) >= 3 },
+  { id: 'ten_stars',  icon: '🌠', titleKey: 'achTenStars',  descKey: 'achTenStarsDesc',  check: s => calcStars(s) >= 10 },
+  { id: 'trophy',     icon: '🏆', titleKey: 'achTrophy',    descKey: 'achTrophyDesc',    check: s => Object.values(s.marks||{}).includes('🏆') },
+  { id: 'no_miss5',   icon: '🛡',  titleKey: 'achNoMiss',    descKey: 'achNoMissDesc',    check: s => calcNoMissStreak(s) >= 5 },
+  { id: 'century',    icon: '💯', titleKey: 'achCentury',   descKey: 'achCenturyDesc',   check: s => calcStars(s) >= 100 },
 ];
 
 // Стоимость отметки в звёздах
@@ -161,8 +163,8 @@ function renderWeeklyRating(enriched) {
   const groupsHtml = groups.map((g, gi) => {
     const hasStars  = g.stars > 0;
     const starsText = hasStars
-      ? `${'⭐'.repeat(Math.min(g.stars, 7))} ${g.stars} ${g.stars === 1 ? 'звезда' : g.stars < 5 ? 'звезды' : 'звёзд'}`
-      : '— Пока нет звёзд';
+      ? `${'⭐'.repeat(Math.min(g.stars, 7))} ${g.stars} ${g.stars === 1 ? t('starWord1') : g.stars < 5 ? t('starWord2') : t('starWord5')}`
+      : t('noStarsYet');
 
     const namesHtml = g.students.map(s => `
       <div class="rg-student">
@@ -186,10 +188,10 @@ function renderWeeklyRating(enriched) {
   return `
     <div class="weekly-rating">
       <div class="rating-header">
-        <div class="section-label">🏅 Рейтинг недели</div>
-        <button class="btn btn-snap-small" id="ratingSnapshotBtn">📊 Снимок рейтинга</button>
+        <div class="section-label">${t('weeklyRating')}</div>
+        <button class="btn btn-snap-small" id="ratingSnapshotBtn">${t('ratingSnapshot')}</button>
       </div>
-      ${!hasAny ? '<div class="rating-empty">Пока нет отметок за последние уроки</div>' : groupsHtml}
+      ${!hasAny ? `<div class="rating-empty">${t('noMarksYet')}</div>` : groupsHtml}
     </div>
   `;
 }
@@ -209,11 +211,11 @@ function renderStudentCard(s) {
 
   const nextLevelHtml = next
     ? `<div class="progress-caption">До «${next.title}»: ещё ${next.min - s.stars} ⭐</div>`
-    : `<div class="progress-caption" style="color:var(--gold)">Максимальный уровень! 🎉</div>`;
+    : `<div class="progress-caption" style="color:var(--gold)">${t('maxLevel')}</div>`;
 
   const achHtml = achSlice.length > 0
-    ? achSlice.map(a => `<span class="ach-badge" title="${a.title}: ${a.desc}">${a.icon}</span>`).join('')
-    : `<span class="ach-empty">Пока нет достижений</span>`;
+    ? achSlice.map(a => `<span class="ach-badge" title="${t(a.titleKey)}: ${t(a.descKey)}">${a.icon}</span>`).join('')
+    : `<span class="ach-empty">${t('noAchievements')}</span>`;
 
   return `
     <div class="student-card" style="--level-color:${lvl.color}" data-student-id="${s.id}">
@@ -223,8 +225,8 @@ function renderStudentCard(s) {
         </div>
         <div class="card-info">
           <div class="card-name">${escapeHtml(s.name)} ${streakHtml}</div>
-          <div class="card-level" style="color:${lvl.color}">${lvl.icon} ${lvl.title}</div>
-          <div class="card-stars">⭐ ${s.stars} звёзд</div>
+          <div class="card-level" style="color:${lvl.color}">${lvl.icon} ${getLevelTitle(lvl)}</div>
+          <div class="card-stars">⭐ ${s.stars} ${t('cardStarsLabel')}</div>
         </div>
       </div>
 
@@ -238,26 +240,26 @@ function renderStudentCard(s) {
       <div class="card-stats">
         <div class="stat-item">
           <div class="stat-val">${s.stars}</div>
-          <div class="stat-key">звёзд</div>
+          <div class="stat-key">${t('statStars')}</div>
         </div>
         <div class="stat-item">
           <div class="stat-val">${s.streak}</div>
-          <div class="stat-key">серия 🔥</div>
+          <div class="stat-key">${t('statStreak')}</div>
         </div>
         <div class="stat-item">
           <div class="stat-val">${s.achievements.length}</div>
-          <div class="stat-key">наград</div>
+          <div class="stat-key">${t('statAwards')}</div>
         </div>
         <div class="stat-item">
           <div class="stat-val">${s.weeklyStars}</div>
-          <div class="stat-key">за неделю</div>
+          <div class="stat-key">${t('statWeekly')}</div>
         </div>
       </div>
 
       <div class="card-achievements">
         ${achHtml}
       </div>
-      <button class="btn btn-snap-card">📸 Снимок прогресса</button>
+      <button class="btn btn-snap-card">${t('snapCard')}</button>
     </div>
   `;
 }
