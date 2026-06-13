@@ -104,10 +104,10 @@ async function buildSnapshotCanvas(group) {
     header:'#1e2235', headerTxt:'#ffffff',
   };
   const MARK_COLOR = { '⭐':'#f5c842','🌟':'#e040fb','🏆':'#ff6b35','❌':'#e05560','':'#dde0f0' };
-  const CELL_W=68, NAME_W=180, ROW_H=46, HEAD_H=52, PAD=28, SCALE=2, RADIUS=12;
+  const CELL_W=68, NAME_W=180, ROW_H=46, HEAD_H=52, PAD=28, SCALE=2, RADIUS=12, FOOTER_H=56;
   const cols=group.lessons, rows=group.students.length;
   const tableW=NAME_W+cols*CELL_W, tableH=HEAD_H+rows*ROW_H;
-  const TITLE_H=72, FOOTER_H=40;
+  const TITLE_H=72;
   const totalW=tableW+PAD*2, totalH=tableH+TITLE_H+FOOTER_H+PAD*2;
 
   const cv = document.createElement('canvas');
@@ -170,15 +170,24 @@ async function buildSnapshotCanvas(group) {
   });
 
   const footY=tY+tableH+PAD/2;
-  ctx.font='11px Arial,sans-serif'; ctx.fillStyle=C.text3;
-  ctx.fillText('🌙 Таджвид — Журнал учителя',tX,footY+14);
+  // Логотип слева
+  ctx.font='11px Arial,sans-serif'; ctx.fillStyle=C.text3; ctx.textAlign='left';
+  ctx.fillText('🌙 Таджвид — Журнал учителя', tX, footY+12);
+
+  // Легенда — два ряда по два элемента, строго слева по фиксированным координатам
   const legend=[['⭐','Выполнил'],['🌟','Отлично'],['🏆','Перевыполнил'],['❌','Не выполнил']];
-  let lx=totalW-PAD; ctx.textAlign='right';
-  legend.slice().reverse().forEach(([emoji,label])=>{
-    ctx.font='11px Arial,sans-serif'; ctx.fillStyle=C.text3;
-    ctx.fillText(label,lx,footY+14); lx-=ctx.measureText(label).width+4;
-    ctx.font='13px serif'; ctx.fillText(emoji,lx,footY+14); lx-=20;
+  const colW = Math.floor((totalW - tX - PAD) / 2); // ширина колонки
+  legend.forEach(([emoji, label], i) => {
+    const col = i % 2;           // 0 = левая, 1 = правая колонка
+    const row = Math.floor(i/2); // 0 = первая строка, 1 = вторая
+    const lx  = tX + col * colW;
+    const ly  = footY + 14 + row * 16;
+    ctx.font = '13px serif';     ctx.fillStyle = C.text3;
+    ctx.fillText(emoji, lx, ly);
+    ctx.font = '11px Arial,sans-serif';
+    ctx.fillText(' ' + label, lx + 18, ly);
   });
+
   ctx.textAlign='left';
   return cv;
 }
