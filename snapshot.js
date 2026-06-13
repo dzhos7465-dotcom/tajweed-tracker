@@ -107,7 +107,7 @@ async function buildSnapshotCanvas(group) {
   const CELL_W=68, NAME_W=180, ROW_H=46, HEAD_H=52, PAD=28, SCALE=2, RADIUS=12, FOOTER_H=56;
   const cols=group.lessons, rows=group.students.length;
   const tableW=NAME_W+cols*CELL_W, tableH=HEAD_H+rows*ROW_H;
-  const TITLE_H=72;
+  const TITLE_H=88;
   const totalW=tableW+PAD*2, totalH=tableH+TITLE_H+FOOTER_H+PAD*2;
 
   const cv = document.createElement('canvas');
@@ -120,11 +120,16 @@ async function buildSnapshotCanvas(group) {
   grad.addColorStop(0,'#1e2235'); grad.addColorStop(1,'#2c3050');
   ctx.fillStyle=grad; fillRoundRect(ctx,0,0,totalW,TITLE_H,0);
 
+  // Строка 1: название группы слева, дата справа
   ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle=C.headerTxt;
-  ctx.fillText(`🌙 ${group.name}`,PAD,TITLE_H/2+8);
+  ctx.fillText(`🌙 ${group.name}`, PAD, 36);
   ctx.font='13px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.55)';
-  ctx.textAlign='right'; ctx.fillText(formatDateFull(),totalW-PAD,TITLE_H/2+8);
+  ctx.textAlign='right'; ctx.fillText(formatDateFull(), totalW-PAD, 36);
   ctx.textAlign='left';
+
+  // Строка 2: подзаголовок «Таджвид — Журнал учителя» под названием
+  ctx.font='12px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.40)';
+  ctx.fillText('🌙 Таджвид — Журнал учителя', PAD, 60);
 
   const tX=PAD, tY=TITLE_H+PAD;
   ctx.shadowColor='rgba(0,0,0,0.12)'; ctx.shadowBlur=16; ctx.shadowOffsetY=4;
@@ -170,22 +175,19 @@ async function buildSnapshotCanvas(group) {
   });
 
   const footY=tY+tableH+PAD/2;
-  // Логотип слева
-  ctx.font='11px Arial,sans-serif'; ctx.fillStyle=C.text3; ctx.textAlign='left';
-  ctx.fillText('🌙 Таджвид — Журнал учителя', tX, footY+12);
 
-  // Легенда — два ряда по два элемента, строго слева по фиксированным координатам
+  // Легенда — два ряда по два элемента
   const legend=[['⭐','Выполнил'],['🌟','Отлично'],['🏆','Перевыполнил'],['❌','Не выполнил']];
-  const colW = Math.floor((totalW - tX - PAD) / 2); // ширина колонки
+  const colW = Math.floor((totalW - PAD*2) / 2);
   legend.forEach(([emoji, label], i) => {
-    const col = i % 2;           // 0 = левая, 1 = правая колонка
-    const row = Math.floor(i/2); // 0 = первая строка, 1 = вторая
-    const lx  = tX + col * colW;
-    const ly  = footY + 14 + row * 16;
-    ctx.font = '13px serif';     ctx.fillStyle = C.text3;
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const lx  = PAD + col * colW;
+    const ly  = footY + 16 + row * 18;
+    ctx.font = '14px serif'; ctx.fillStyle = C.text3; ctx.textAlign='left';
     ctx.fillText(emoji, lx, ly);
-    ctx.font = '11px Arial,sans-serif';
-    ctx.fillText(' ' + label, lx + 18, ly);
+    ctx.font = '11px Arial,sans-serif'; ctx.fillStyle = C.text3;
+    ctx.fillText(' ' + label, lx + 20, ly);
   });
 
   ctx.textAlign='left';
