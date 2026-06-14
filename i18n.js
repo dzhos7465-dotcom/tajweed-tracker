@@ -136,15 +136,15 @@ const translations = {
     // ── Группы ──
     addGroup:            '＋ Тоба',
     noGroups:            'Тобанаш яц',
-    noGroupsDesc:        'ДӀадоло «＋ Тоба» тӀетаӀае',
-    deleteGroup:         'Тоба дӀаякха',
+    noGroupsDesc:        'ДӀадоло «＋ Тоба» тӀетаӀа йе',
+    deleteGroup:         'Тоба дӀайаккха',
 
     // ── Ученики ──
     sortStudents:        '🔤 А→Я',
     bulkAdd:             '📋 МогIам',
     addStudent:          '＋ Дешархо',
     noStudents:          'Дешархой бац',
-    noStudentsDesc:      'Хьалхара дешархо тӀетоха',
+    noStudentsDesc:      'Хьалхара дешархо д1аваз ве',
 
     // ── Таблица ──
     tableNameHeader:     'ЦӀе',
@@ -165,7 +165,7 @@ const translations = {
     btnAdd:              'ТӀетоха',
 
     // ── Модалка: отметки ──
-    modalMark:           'Билгалло харжа',
+    modalMark:           'Билгало харжа',
     markDone:            'Кхочушдина',
     markExcellent:       'ТӀехдика',
     markExceeded:        'ТӀехkхочушдина',
@@ -174,10 +174,10 @@ const translations = {
 
     // ── Модалка: удалить ученика ──
     modalDeleteStudent:  'Дешархо дӀаваккха?',
-    btnDelete:           'ДӀаякха',
+    btnDelete:           'ДӀайаккха',
 
     // ── Модалка: удалить группу ──
-    modalDeleteGroup:    'Тоба дӀаякха?',
+    modalDeleteGroup:    'Тоба дӀайаккха?',
 
     // ── Модалка: редактировать имя ──
     modalEditName:       '✏️ ЦӀе нисъян',
@@ -185,34 +185,34 @@ const translations = {
 
     // ── Модалка: список имён ──
     modalBulkAdd:        '📋 МогIам тӀетоха',
-    bulkAddDesc:         'ЦӀераш йилла — хӀора а керлачу могӀанера:',
-    bulkPlaceholder:     'Айша Иванова\nМарьям Петрова\nЗайнаб Сидорова…',
+    bulkAddDesc:         'ЦӀераш йаз йе — хӀора а керлачу могӀанера:',
+    bulkPlaceholder:     'Айша\nМарьям\nАхьмад …',
 
     // ── Модалка: настройки ──
-    modalSettings:       '⚙️ Google Sheets дӀатасар',
+    modalSettings:       '⚙️ Google Sheets т1етасар',
     settingsDesc:        'Шайн Google Apps Script Web App URL йилла:',
     btnTest:             'Таллам бан',
 
     // ── Уровни ──
     levelBeginner:       'ДIаволалуриг',
     levelReader:         'Дешархо',
-    levelDiligent:       'Къахьоьгу дешархо',
-    levelExpert:         'Дешар хуург',
+    levelDiligent:       'Дика доьшуриг',
+    levelExpert:         'Къахьоьгу дешархо',
     levelMaster:         'Дешаран говзанча',
 
     // ── Достижения ──
     achFirstStar:        'Хьалхара седа',
-    achFirstStarDesc:    'Хьалхара билгалло яккха',
+    achFirstStarDesc:    'Хьалхара билгало яккха',
     achStreak3:          'ЦӀе!',
     achStreak3Desc:      'ТӀаьхьий-хьалхий 3 урок',
     achStreak5:          'Йовш йоцу цӀе',
     achStreak5Desc:      'ТӀаьхьий-хьалхий 5 урок',
     achPerfect3:         'Кхозза «ТӀехдика»',
-    achPerfect3Desc:     'ТӀаьхьий-хьалхий 3 билгалло',
+    achPerfect3Desc:     'ТӀаьхьий-хьалхий 3 билгало',
     achTenStars:         'Итт!',
     achTenStarsDesc:     '10 седа гулбар',
     achTrophy:           'ХӀонс',
-    achTrophyDesc:       'Билгалло яккха',
+    achTrophyDesc:       'Билгало йаккха',
     achNoMiss:           'Юкъахдахарш доцуш',
     achNoMissDesc:       '❌ доцуш кхочушдина 5 урок',
     achCentury:          'Говзанча!',
@@ -236,13 +236,13 @@ const translations = {
     noMarksYet:          'ТӀаьххьарчу урокашна хӀинца а билгаллонаш яц',
     studentsCount:       'деш.',
     starWord1:           'седа',
-    starWord2:           'седарчий',
+    starWord2:           'седа',
     starWord5:           'седа',
     noStarsYet:          '— ХӀинца а седарчий дац',
 
     // ── Подтверждения ──
     confirmRemoveLesson: 'Урок дӀаяккха',
-    confirmRemoveLessonSuffix: '? ХӀара урокан билгаллонаш дерриге а дӀадолу.',
+    confirmRemoveLessonSuffix: '? ХӀокху урокан билгаллонаш йерриге а дӀайолу.',
   }
 };
 
