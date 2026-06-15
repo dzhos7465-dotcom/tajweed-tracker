@@ -210,7 +210,7 @@ function renderStudentCard(s) {
     : '';
 
   const nextLevelHtml = next
-    ? `<div class="progress-caption">До «${next.title}»: ещё ${next.min - s.stars} ⭐</div>`
+    ? `<div class="progress-caption">${t('progressTo')} «${getLevelTitle(next)}»: ${t('progressMore')} ${next.min - s.stars} ⭐</div>`
     : `<div class="progress-caption" style="color:var(--gold)">${t('maxLevel')}</div>`;
 
   const achHtml = achSlice.length > 0
