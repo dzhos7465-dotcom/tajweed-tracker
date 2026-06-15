@@ -263,7 +263,7 @@ async function takeStudentSnapshot(studentId) {
 
   const barY=div1Y+16, barW=W-PAD*2, barH=12;
   ctx.font='10px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.35)';
-  ctx.fillText((typeof t==='function'?'ПРОГРЕСС':'ПРОГРЕСС'),PAD,barY-4);
+  ctx.fillText((typeof t==='function'?t('progressHeader')||'ПРОГРЕСС':'ПРОГРЕСС'),PAD,barY-4);
   ctx.fillStyle='rgba(255,255,255,0.1)';
   ctx.beginPath(); ctx.roundRect(PAD,barY,barW,barH,999); ctx.fill();
   const filledW=Math.max(barH,barW*prog/100);
@@ -374,7 +374,7 @@ async function takeRatingSnapshot() {
     ctx.fillStyle=bgGrad; ctx.beginPath(); ctx.rect(0,0,W,H); ctx.fill();
 
     ctx.font='bold 24px Arial,sans-serif'; ctx.fillStyle='#f5c842';
-    ctx.textAlign='center'; ctx.fillText('🏅 Рейтинг недели',W/2,PAD+30);
+    ctx.textAlign='center'; ctx.fillText((typeof t==='function'?t('weeklyRating'):'🏅 Рейтинг недели'),W/2,PAD+30);
     ctx.font='13px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.4)';
     ctx.fillText(group.name+' · '+formatDateFull(),W/2,PAD+52);
     ctx.textAlign='left';

@@ -99,6 +99,7 @@ const translations = {
     achCenturyDesc:      'Набрать 100 звёзд',
 
     achHeader:           'ДОСТИЖЕНИЯ',
+    progressHeader:      'ПРОГРЕСС ДО СЛЕДУЮЩЕГО УРОВНЯ',
 
     // ── Карточки учеников ──
     statStars:           'звёзд',
@@ -221,6 +222,7 @@ const translations = {
     achCenturyDesc:      '100 седа гулбар',
 
     achHeader:           'КХИАМАШ',
+    progressHeader:      'КХИАМ',
 
     // ── Карточки учеников ──
     statStars:           'седа',
