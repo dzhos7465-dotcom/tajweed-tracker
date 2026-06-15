@@ -85,7 +85,7 @@ async function takeSnapshot() {
     return;
   }
   const btn = document.getElementById('snapshotBtn');
-  btn.disabled = true; btn.textContent = '⏳ Создаю…';
+  btn.disabled = true; btn.textContent = '⏳ '+(typeof t==='function'?t('creating')||'Создаю…':'Создаю…');
   try {
     const canvas = await buildSnapshotCanvas(group);
     downloadCanvas(canvas, `${group.name}_таджвид_${formatDate()}.png`);
@@ -93,7 +93,7 @@ async function takeSnapshot() {
     console.error('Snapshot error:', e);
     alert('Не удалось создать снимок.');
   } finally {
-    btn.disabled = false; btn.textContent = '📸 Снимок';
+    btn.disabled = false; btn.textContent = typeof t==='function'?t('snapshotBtn'):'📸 Снимок';
   }
 }
 
@@ -344,7 +344,7 @@ async function takeRatingSnapshot() {
     return;
   }
   const btn = document.getElementById('ratingSnapshotBtn');
-  if (btn) { btn.disabled=true; btn.textContent='⏳ Создаю…'; }
+  if (btn) { btn.disabled=true; btn.textContent='⏳ '+(typeof t==='function'?t('creating')||'Создаю…':'Создаю…'); }
 
   try {
     const enriched = group.students.map(s => ({
@@ -437,6 +437,6 @@ async function takeRatingSnapshot() {
     console.error('Rating snapshot error:', e);
     alert('Не удалось создать снимок рейтинга.');
   } finally {
-    if(btn){ btn.disabled=false; btn.textContent='📊 Снимок рейтинга'; }
+    if(btn){ btn.disabled=false; btn.textContent=typeof t==='function'?t('ratingSnapshot'):'📊 Снимок рейтинга'; }
   }
 }

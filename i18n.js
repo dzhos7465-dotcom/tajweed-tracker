@@ -30,6 +30,7 @@ const translations = {
     tableNameHeader:     'Имя',
     lessonPrefix:        'Урок',
     snapshotBtn:         '📸 Снимок',
+    creating:            'Создаю…',
     removeLesson:        '− Урок',
     addLesson:           '＋ Урок',
 
@@ -153,6 +154,7 @@ const translations = {
     tableNameHeader:     'ЦӀе',
     lessonPrefix:        'Урок',
     snapshotBtn:         '📸 Сурт',
+    creating:            'Кхуллуш…',
     removeLesson:        '− Урок',
     addLesson:           '＋ Урок',
 
