@@ -18,6 +18,14 @@ const LEVELS = [
 ];
 // Геттер title с учётом текущего языка
 function getLevelTitle(level) { return typeof t === 'function' ? t(level.titleKey) : level.titleKey; }
+function buildProgressText(next, starsLeft) {
+  if (typeof t !== 'function') return `До «${getLevelTitle(next)}»: ещё ${starsLeft} ⭐`;
+  const lang = typeof currentLang !== 'undefined' ? currentLang : 'ru';
+  if (lang === 'ce') {
+    return `«${getLevelTitle(next)}» тӀегӀан тӀекхача: ${t('progressMore')} ${starsLeft} ⭐`;
+  }
+  return `${t('progressTo')} «${getLevelTitle(next)}»: ${t('progressMore')} ${starsLeft} ⭐`;
+}
 
 const ACHIEVEMENTS = [
   { id: 'first_star', icon: '⭐', titleKey: 'achFirstStar', descKey: 'achFirstStarDesc', check: s => calcStars(s) >= 1 },
@@ -210,7 +218,7 @@ function renderStudentCard(s) {
     : '';
 
   const nextLevelHtml = next
-    ? `<div class="progress-caption">${t('progressTo')} «${getLevelTitle(next)}»: ${t('progressMore')} ${next.min - s.stars} ⭐</div>`
+    ? `<div class="progress-caption">${buildProgressText(next, next.min - s.stars)}</div>`
     : `<div class="progress-caption" style="color:var(--gold)">${t('maxLevel')}</div>`;
 
   const achHtml = achSlice.length > 0
