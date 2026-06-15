@@ -129,7 +129,7 @@ async function buildSnapshotCanvas(group) {
 
   // Строка 2: подзаголовок «Таджвид — Журнал учителя» под названием
   ctx.font='12px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.40)';
-  ctx.fillText('🌙 Таджвид — Журнал учителя', PAD, 60);
+  ctx.fillText('🌙 '+(typeof t==='function'?t('appTitle')+' — '+t('appSubtitle'):'Таджвид — Журнал учителя'), PAD, 60);
 
   const tX=PAD, tY=TITLE_H+PAD;
   ctx.shadowColor='rgba(0,0,0,0.12)'; ctx.shadowBlur=16; ctx.shadowOffsetY=4;
@@ -139,7 +139,7 @@ async function buildSnapshotCanvas(group) {
 
   ctx.fillStyle=C.header; fillRoundRect(ctx,tX,tY,tableW,HEAD_H,RADIUS,true,false);
   ctx.font='bold 12px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.fillText('УЧЕНИК',tX+18,tY+HEAD_H/2+5);
+  ctx.fillText((typeof t==='function'?t('tableNameHeader'):'Имя').toUpperCase(),tX+18,tY+HEAD_H/2+5);
   for(let i=0;i<cols;i++){
     ctx.font='bold 11px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.7)';
     ctx.textAlign='center';
@@ -177,7 +177,7 @@ async function buildSnapshotCanvas(group) {
   const footY=tY+tableH+PAD/2;
 
   // Легенда — два ряда по два элемента
-  const legend=[['⭐','Выполнил'],['🌟','Отлично'],['🏆','Перевыполнил'],['❌','Не выполнил']];
+  const legend=[['⭐',t('markDone')],['🌟',t('markExcellent')],['🏆',t('markExceeded')],['❌',t('markFailed')]];
   const colW = Math.floor((totalW - PAD*2) / 2);
   legend.forEach(([emoji, label], i) => {
     const col = i % 2;
@@ -241,12 +241,12 @@ async function takeStudentSnapshot(studentId) {
   ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='#ffffff';
   ctx.fillText(student.name.length>20?student.name.slice(0,19)+'…':student.name,nameX,32);
   ctx.font='bold 14px Arial,sans-serif'; ctx.fillStyle=level.color;
-  ctx.fillText(level.icon+' '+level.title,nameX,52);
+  ctx.fillText(level.icon+' '+(typeof getLevelTitle==='function'?getLevelTitle(level):level.titleKey||''),nameX,52);
   ctx.font='12px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.4)';
   ctx.fillText('📚 '+group.name,nameX,70);
 
   if(streak>0){
-    const pill='🔥 '+streak+' подряд';
+    const pill='🔥 '+streak+' '+(typeof t==='function'?t('statStreak').replace(' 🔥',''):'подряд');
     ctx.font='bold 12px Arial,sans-serif';
     const pillW=ctx.measureText(pill).width+20, pillX=W-PAD-pillW, pillY=20;
     ctx.fillStyle='rgba(255,107,53,0.25)';
@@ -263,7 +263,7 @@ async function takeStudentSnapshot(studentId) {
 
   const barY=div1Y+16, barW=W-PAD*2, barH=12;
   ctx.font='10px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.35)';
-  ctx.fillText('ПРОГРЕСС ДО СЛЕДУЮЩЕГО УРОВНЯ',PAD,barY-4);
+  ctx.fillText((typeof t==='function'?'ПРОГРЕСС':'ПРОГРЕСС'),PAD,barY-4);
   ctx.fillStyle='rgba(255,255,255,0.1)';
   ctx.beginPath(); ctx.roundRect(PAD,barY,barW,barH,999); ctx.fill();
   const filledW=Math.max(barH,barW*prog/100);
@@ -272,16 +272,22 @@ async function takeStudentSnapshot(studentId) {
   ctx.fillStyle=barGrad; ctx.shadowColor=level.color; ctx.shadowBlur=8;
   ctx.beginPath(); ctx.roundRect(PAD,barY,filledW,barH,999); ctx.fill();
   ctx.shadowBlur=0;
-  const capText=next?'До «'+next.title+'»: ещё '+(next.min-stars)+' ⭐':'🎉 Максимальный уровень!';
+  const levelName = next && (typeof getLevelTitle==='function' ? getLevelTitle(next) : (next.titleKey||''));
+  const capText = next
+    ? (typeof buildProgressText==='function'
+        ? buildProgressText(next, next.min-stars)
+        : 'До «'+levelName+'»: ещё '+(next.min-stars)+' ⭐')
+    : (typeof t==='function' ? t('maxLevel') : '🎉 Максимальный уровень!');
   ctx.font='11px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.5)';
   ctx.fillText(capText,PAD,barY+barH+16);
 
   const statsY=barY+barH+32, statW=(W-PAD*2-12)/4;
+  const _t = typeof t==='function' ? t : k=>k;
   const statsData=[
-    {val:String(stars),      key:'Звёзд',  emoji:'⭐'},
-    {val:String(streak),     key:'Серия',  emoji:'🔥'},
-    {val:String(achs.length),key:'Наград', emoji:'🏅'},
-    {val:String(weekly),     key:'Неделя', emoji:'📅'},
+    {val:String(stars),      key:_t('statStars'),   emoji:'⭐'},
+    {val:String(streak),     key:_t('statStreak'),  emoji:'🔥'},
+    {val:String(achs.length),key:_t('statAwards'),  emoji:'🏅'},
+    {val:String(weekly),     key:_t('statWeekly'),  emoji:'📅'},
   ];
   statsData.forEach((st,i)=>{
     const sx=PAD+i*(statW+4), sy=statsY;
@@ -305,7 +311,7 @@ async function takeStudentSnapshot(studentId) {
 
   const achY=statsY+86;
   ctx.font='10px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.35)';
-  ctx.fillText('ДОСТИЖЕНИЯ',PAD,achY);
+  ctx.fillText((typeof t==='function'?t('achHeader')||'ДОСТИЖЕНИЯ':'ДОСТИЖЕНИЯ'),PAD,achY);
   if(achs.length>0){
     achs.slice(0,10).forEach((a,i)=>{
       const ax=PAD+i*40, ay=achY+6;
@@ -322,7 +328,7 @@ async function takeStudentSnapshot(studentId) {
 
   ctx.font='10px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.2)';
   ctx.textAlign='right';
-  ctx.fillText('🌙 Таджвид — Журнал учителя · '+formatDateFull(),W-PAD,H-12);
+  ctx.fillText('🌙 '+(typeof t==='function'?t('appTitle')+' — '+t('appSubtitle'):'Таджвид — Журнал учителя')+' · '+formatDateFull(),W-PAD,H-12);
   ctx.textAlign='left';
 
   downloadCanvas(cv, student.name+'_прогресс_'+formatDate()+'.png');
@@ -388,7 +394,8 @@ async function takeRatingSnapshot() {
       ctx.fillStyle='rgba(255,255,255,0.04)';
       ctx.beginPath(); ctx.roundRect(PAD/2,curY+4,W-PAD,blockH-8,12); ctx.fill();
 
-      const starsLabel=hasStars?(g.stars===1?'1 звезда':g.stars+' звезды'):'Пока нет звёзд';
+      const _tR=typeof t==='function'?t:k=>k;
+    const starsLabel=hasStars?(g.stars===1?'1 '+_tR('starWord1'):g.stars+' '+_tR('starWord2')):_tR('noStarsYet').replace('— ','');
       const starEmoji=hasStars?'⭐'.repeat(Math.min(g.stars,5)):'—';
       ctx.font='bold 13px Arial,sans-serif'; ctx.fillStyle=color;
       ctx.fillText(starEmoji+'  '+starsLabel,PAD+8,curY+GRP_H/2+5);
@@ -421,7 +428,7 @@ async function takeRatingSnapshot() {
     ctx.beginPath(); ctx.moveTo(PAD,curY+8); ctx.lineTo(W-PAD,curY+8); ctx.stroke();
     ctx.font='10px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.2)';
     ctx.textAlign='center';
-    ctx.fillText('🌙 Таджвид — Журнал учителя',W/2,curY+28);
+    ctx.fillText('🌙 '+(typeof t==='function'?t('appTitle')+' — '+t('appSubtitle'):'Таджвид — Журнал учителя'),W/2,curY+28);
     ctx.textAlign='left';
 
     downloadCanvas(cv, group.name+'_рейтинг_'+formatDate()+'.png');

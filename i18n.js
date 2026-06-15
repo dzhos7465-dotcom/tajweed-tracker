@@ -98,6 +98,8 @@ const translations = {
     achCentury:          'Мастер!',
     achCenturyDesc:      'Набрать 100 звёзд',
 
+    achHeader:           'ДОСТИЖЕНИЯ',
+
     // ── Карточки учеников ──
     statStars:           'звёзд',
     statStreak:          'серия 🔥',
@@ -217,6 +219,8 @@ const translations = {
     achNoMissDesc:       '❌ доцуш кхочушдина 5 урок',
     achCentury:          'Говзанча!',
     achCenturyDesc:      '100 седа гулбар',
+
+    achHeader:           'КХИАМАШ',
 
     // ── Карточки учеников ──
     statStars:           'седа',
