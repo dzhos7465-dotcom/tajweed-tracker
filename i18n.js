@@ -124,6 +124,13 @@ const translations = {
     starWord5:           'звёзд',
     noStarsYet:          '— Пока нет звёзд',
 
+    // ── Периоды ──
+    periodCurrent:       'Текущий',
+    periodName:          'Период',
+    periodArchive:       '📁 Просмотр архива',
+    closePeriod:         '📦 Завершить период',
+    closePeriodConfirm:  'Завершить текущий период? Уроки сохранятся в архиве, начнётся новый период.',
+
     // ── Подтверждения ──
     confirmRemoveLesson: 'Удалить Урок',
     confirmRemoveLessonSuffix: '? Все отметки этого урока будут удалены.',
@@ -247,6 +254,20 @@ const translations = {
     starWord2:           'седа',
     starWord5:           'седа',
     noStarsYet:          '— ХӀинца а седарчий дац',
+
+    // ── Периоды ──
+    periodCurrent:       'Текущий',
+    periodName:          'Период',
+    periodArchive:       '📁 Просмотр архива',
+    closePeriod:         '📦 Завершить период',
+    closePeriodConfirm:  'Завершить текущий период? Уроки сохранятся в архиве, начнётся новый период.',
+
+    // ── Периоды ──
+    periodCurrent:       'Карара',
+    periodName:          'Мур',
+    periodArchive:       '📁 Архиве хьажар',
+    closePeriod:         '📦 Мур чекхбаккха',
+    closePeriodConfirm:  'Карара мур дIаберза бой? Урокаш архивехь хир ю, керла мур дIаболалур бу.',
 
     // ── Подтверждения ──
     confirmRemoveLesson: 'Урок дӀаяккха',
