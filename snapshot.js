@@ -10,6 +10,9 @@ document.addEventListener('click', function(e) {
   if (e.target && e.target.id === 'ratingSnapshotBtn') {
     takeRatingSnapshot();
   }
+  if (e.target && e.target.id === 'groupProgressSnapshotBtn') {
+    takeGroupProgressSnapshot();
+  }
   if (e.target && e.target.classList.contains('btn-snap-card')) {
     const card = e.target.closest('.student-card');
     if (card && card.dataset.studentId) {
@@ -438,5 +441,183 @@ async function takeRatingSnapshot() {
     alert('Не удалось создать снимок рейтинга.');
   } finally {
     if(btn){ btn.disabled=false; btn.textContent=typeof t==='function'?t('ratingSnapshot'):'📊 Снимок рейтинга'; }
+  }
+}
+
+// ══════════════════════════════════════════════
+// 4. СНИМОК ПРОГРЕССА ВСЕЙ ГРУППЫ
+// ══════════════════════════════════════════════
+async function takeGroupProgressSnapshot() {
+  const group = getActiveGroup();
+  if (!group || group.students.length === 0) {
+    alert('Нет данных для снимка.');
+    return;
+  }
+
+  const btn = document.getElementById('groupProgressSnapshotBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ ' + (typeof t==='function'?t('creating')||'Создаю…':'Создаю…'); }
+
+  try {
+    const SCALE  = 2;
+    const W      = 540;
+    const PAD    = 24;
+    const HEAD_H = 80;
+    const ROW_H  = 86;
+    const FOOT_H = 36;
+    const H      = HEAD_H + group.students.length * ROW_H + FOOT_H + PAD;
+
+    const cv  = document.createElement('canvas');
+    cv.width  = W * SCALE;
+    cv.height = H * SCALE;
+    const ctx = cv.getContext('2d');
+    ctx.scale(SCALE, SCALE);
+
+    // ── Фон ──
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, '#12152a');
+    bgGrad.addColorStop(1, '#1a1e35');
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.fill();
+
+    // ── Шапка ──
+    const appTitle = typeof t==='function' ? t('appTitle')+' — '+t('appSubtitle') : 'Таджвид — Журнал учителя';
+    const progressTitle = typeof t==='function' ? t('groupProgressTitle')||'Прогресс учеников' : 'Прогресс учеников';
+
+    ctx.font = 'bold 20px Arial,sans-serif';
+    ctx.fillStyle = '#f5c842';
+    ctx.textAlign = 'center';
+    ctx.fillText('📊 ' + progressTitle, W/2, PAD + 22);
+
+    ctx.font = '12px Arial,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText(group.name + ' · ' + formatDateFull(), W/2, PAD + 42);
+    ctx.textAlign = 'left';
+
+    // Разделитель
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD, HEAD_H - 8); ctx.lineTo(W - PAD, HEAD_H - 8); ctx.stroke();
+
+    // ── Строки учеников ──
+    group.students.forEach((student, i) => {
+      const rowY = HEAD_H + i * ROW_H;
+
+      // Считаем данные
+      const stars  = calcStars(student);
+      const streak = calcStreak(student);
+      const level  = getLevel(stars);
+      const next   = getNextLevel(stars);
+      const prog   = calcProgress(stars);
+      const achs   = getUnlockedAchievements(student);
+
+      // Чередующийся фон строки
+      if (i % 2 === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        ctx.beginPath(); ctx.rect(0, rowY, W, ROW_H); ctx.fill();
+      }
+
+      // Разделитель
+      if (i > 0) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(PAD, rowY); ctx.lineTo(W-PAD, rowY); ctx.stroke();
+      }
+
+      // Цветная полоска слева — цвет уровня
+      ctx.fillStyle = level.color;
+      ctx.beginPath(); ctx.rect(0, rowY, 4, ROW_H); ctx.fill();
+
+      // Аватар уровня
+      const avX = PAD + 20, avY = rowY + ROW_H/2;
+      ctx.fillStyle = level.color + '25';
+      ctx.beginPath(); ctx.arc(avX, avY, 18, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = level.color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(avX, avY, 18, 0, Math.PI*2); ctx.stroke();
+      ctx.font = '18px serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(level.icon, avX, avY + 7);
+      ctx.textAlign = 'left';
+
+      // Имя ученика
+      const nameX = PAD + 46;
+      const shortName = student.name.length > 22 ? student.name.slice(0,21)+'…' : student.name;
+      ctx.font = 'bold 14px Arial,sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(shortName, nameX, rowY + 22);
+
+      // Уровень + звёзды + серия
+      ctx.font = '11px Arial,sans-serif';
+      ctx.fillStyle = level.color;
+      ctx.fillText(level.icon + ' ' + getLevelTitle(level), nameX, rowY + 38);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      const starsLabel = typeof t==='function' ? t('statStars') : 'звёзд';
+      const streakLabel = typeof t==='function' ? t('statStreak').replace(' 🔥','') : 'серия';
+      ctx.fillText('⭐ ' + stars + ' ' + starsLabel + '   🔥 ' + streak + ' ' + streakLabel, nameX, rowY + 52);
+
+      // Прогресс-бар
+      const barX = nameX, barY = rowY + 60;
+      const barW = W - nameX - PAD - 80;
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(barX, barY, barW, 7, 999); ctx.fill();
+      const filled = Math.max(7, barW * prog / 100);
+      ctx.fillStyle = level.color;
+      ctx.beginPath(); ctx.roundRect(barX, barY, filled, 7, 999); ctx.fill();
+
+      // Подпись прогресса
+      if (next) {
+        ctx.font = '9px Arial,sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fillText((next.min - stars) + ' ⭐ → ' + getLevelTitle(next), barX, barY + 19);
+      } else {
+        ctx.font = '9px Arial,sans-serif';
+        ctx.fillStyle = level.color;
+        ctx.fillText(typeof t==='function' ? t('maxLevel') : 'Максимальный уровень! 🎉', barX, barY + 19);
+      }
+
+      // Достижения — справа
+      const achStartX = W - PAD - (Math.min(achs.length, 5) * 28);
+      achs.slice(0, 5).forEach((a, ai) => {
+        const ax = achStartX + ai * 28;
+        const ay = rowY + ROW_H/2 - 14;
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(ax, ay, 24, 24, 6); ctx.fill(); ctx.stroke();
+        ctx.font = '14px serif'; ctx.textAlign = 'center';
+        ctx.fillText(a.icon, ax + 12, ay + 18);
+        ctx.textAlign = 'left';
+      });
+
+      if (achs.length === 0) {
+        ctx.font = '10px Arial,sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.textAlign = 'right';
+        ctx.fillText(typeof t==='function' ? t('noAchievements') : 'Пока нет достижений', W - PAD, rowY + ROW_H/2 + 4);
+        ctx.textAlign = 'left';
+      }
+    });
+
+    // ── Подвал ──
+    const footY = HEAD_H + group.students.length * ROW_H + PAD/2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD, footY); ctx.lineTo(W-PAD, footY); ctx.stroke();
+    ctx.font = '10px Arial,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌙 ' + appTitle, W/2, footY + 22);
+    ctx.textAlign = 'left';
+
+    downloadCanvas(cv, group.name + '_прогресс_группы_' + formatDate() + '.png');
+
+  } catch(e) {
+    console.error('Group progress snapshot error:', e);
+    alert('Не удалось создать снимок.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = typeof t==='function' ? t('groupProgressSnapshot') : '📊 Прогресс группы';
+    }
   }
 }
