@@ -117,6 +117,8 @@ const translations = {
     // ── Рейтинг недели ──
     weeklyRating:        '🏅 Рейтинг недели',
     ratingSnapshot:      '📊 Снимок рейтинга',
+    groupProgressSnapshot: '📊 Прогресс группы',
+    groupProgressTitle:  'Прогресс учеников',
     noMarksYet:          'Пока нет отметок за последние уроки',
     studentsCount:       'уч.',
     starWord1:           'звезда',
@@ -251,6 +253,8 @@ const translations = {
     // ── Рейтинг недели ──
     weeklyRating:        '🏅 КӀиран рейтинг',
     ratingSnapshot:      'Рейтинган сурт',
+    groupProgressSnapshot: '📊 Дешархойн кхиам',
+    groupProgressTitle:  'Дешархойн кхиам',
     noMarksYet:          'ТӀаьххьарчу урокашна хӀинца а билгаллонаш яц',
     studentsCount:       'деш.',
     starWord1:           'седа',
