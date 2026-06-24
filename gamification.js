@@ -197,7 +197,10 @@ function renderWeeklyRating(enriched) {
     <div class="weekly-rating">
       <div class="rating-header">
         <div class="section-label">${t('weeklyRating')}</div>
-        <button class="btn btn-snap-small" id="ratingSnapshotBtn">${t('ratingSnapshot')}</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-snap-small" id="groupProgressSnapshotBtn">${t('groupProgressSnapshot')||'📊 Прогресс группы'}</button>
+          <button class="btn btn-snap-small" id="ratingSnapshotBtn">${t('ratingSnapshot')}</button>
+        </div>
       </div>
       ${!hasAny ? `<div class="rating-empty">${t('noMarksYet')}</div>` : groupsHtml}
     </div>
