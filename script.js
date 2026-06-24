@@ -511,13 +511,30 @@ document.querySelectorAll('.mark-option').forEach(btn => {
     const student = group.students.find(s => s.id === pendingMark.studentId);
     if (!student) return;
 
-    const mark = btn.dataset.mark; // "" = clear
-    if (!student.marks) student.marks = {};
+    const mark = btn.dataset.mark;
 
-    if (mark === '') {
-      delete student.marks[pendingMark.lesson];
+    // Если periods.js загружен — сохраняем в активный период
+    if (typeof getActivePeriod === 'function' && group.periods) {
+      const period = getActivePeriod(group);
+      if (period && period.isCurrent) {
+        if (!period.marks) period.marks = {};
+        if (!period.marks[student.id]) period.marks[student.id] = {};
+        if (mark === '') {
+          delete period.marks[student.id][pendingMark.lesson];
+        } else {
+          period.marks[student.id][pendingMark.lesson] = mark;
+        }
+        // Синхронизируем student.marks для gamification
+        student.marks = { ...period.marks[student.id] };
+      }
     } else {
-      student.marks[pendingMark.lesson] = mark;
+      // Без periods.js — старая логика
+      if (!student.marks) student.marks = {};
+      if (mark === '') {
+        delete student.marks[pendingMark.lesson];
+      } else {
+        student.marks[pendingMark.lesson] = mark;
+      }
     }
 
     markModal.classList.add('hidden');

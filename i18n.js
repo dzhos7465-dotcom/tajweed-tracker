@@ -130,6 +130,9 @@ const translations = {
     periodArchive:       '📁 Просмотр архива',
     closePeriod:         '📦 Завершить период',
     closePeriodConfirm:  'Завершить текущий период? Уроки сохранятся в архиве, начнётся новый период.',
+    undoClosePeriod:     '↩️ Отменить завершение',
+    undoClosePeriodConfirm: 'Отменить завершение последнего периода? Текущий пустой период будет удалён.',
+    noArchiveToUndo:     'Нет завершённых периодов для отмены.',
 
     // ── Подтверждения ──
     confirmRemoveLesson: 'Удалить Урок',
@@ -261,6 +264,9 @@ const translations = {
     periodArchive:       '📁 Просмотр архива',
     closePeriod:         '📦 Завершить период',
     closePeriodConfirm:  'Завершить текущий период? Уроки сохранятся в архиве, начнётся новый период.',
+    undoClosePeriod:     '↩️ Отменить завершение',
+    undoClosePeriodConfirm: 'Отменить завершение последнего периода? Текущий пустой период будет удалён.',
+    noArchiveToUndo:     'Нет завершённых периодов для отмены.',
 
     // ── Периоды ──
     periodCurrent:       'Карара',
@@ -268,6 +274,9 @@ const translations = {
     periodArchive:       '📁 Архиве хьажар',
     closePeriod:         '📦 Мур чекхбаккха',
     closePeriodConfirm:  'Карара мур дIаберза бой? Урокаш архивехь хир ю, керла мур дIаболалур бу.',
+    undoClosePeriod:     '↩️ Юхаэца',
+    undoClosePeriodConfirm: 'ТIаьххьарчу мурна чекхдалар юхаэца? Карара мур дIадолу.',
+    noArchiveToUndo:     'Юхаэцар йолу мурнаш яц.',
 
     // ── Подтверждения ──
     confirmRemoveLesson: 'Урок дӀаяккха',

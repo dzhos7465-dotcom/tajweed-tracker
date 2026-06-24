@@ -1089,3 +1089,21 @@ body.dark::before {
   .period-tab { font-size: 0.75rem; padding: 5px 10px; }
   .btn-close-period { font-size: 0.75rem; padding: 6px 10px; }
 }
+
+/* ── Кнопка отмены периода ── */
+.btn-undo-period {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
+  flex-shrink: 0;
+}
+.btn-undo-period:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}

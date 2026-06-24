@@ -152,6 +152,42 @@ function closePeriod() {
 }
 
 // ══════════════════════════════════════════════
+// ОТМЕНИТЬ ЗАВЕРШЕНИЕ ПОСЛЕДНЕГО ПЕРИОДА
+// ══════════════════════════════════════════════
+function undoClosePeriod() {
+  const group = getActiveGroup();
+  if (!group || !group.periods) return;
+
+  // Проверяем: есть ли завершённые периоды
+  const archived = group.periods.filter(p => !p.isCurrent);
+  if (archived.length === 0) {
+    alert(typeof t === 'function' ? t('noArchiveToUndo') : 'Нет завершённых периодов для отмены.');
+    return;
+  }
+
+  const msg = typeof t === 'function' ? t('undoClosePeriodConfirm')
+    : 'Отменить завершение последнего периода? Текущий пустой период будет удалён.';
+  if (!confirm(msg)) return;
+
+  // Удаляем текущий пустой период
+  const currentIdx = group.periods.findIndex(p => p.isCurrent);
+  if (currentIdx !== -1) group.periods.splice(currentIdx, 1);
+
+  // Восстанавливаем последний архивный период как текущий
+  const lastArchived = [...archived].sort((a,b) => (b.num||0) - (a.num||0))[0];
+  lastArchived.isCurrent = true;
+  lastArchived.name = typeof t === 'function' ? t('periodCurrent') : 'Текущий';
+  delete lastArchived.closedAt;
+
+  group.activePeriodId = lastArchived.id;
+  group.lessons = lastArchived.lessons;
+
+  save();
+  render();
+  renderPeriodTabs();
+}
+
+// ══════════════════════════════════════════════
 // ПЕРЕКЛЮЧИТЬ ПЕРИОД
 // ══════════════════════════════════════════════
 function selectPeriod(periodId) {
@@ -244,6 +280,16 @@ function renderPeriodTabs() {
       if (confirm(msg)) closePeriod();
     });
     container.appendChild(closeBtn);
+
+    // Кнопка отмены — только если есть архивные периоды
+    if (hasArchive) {
+      const undoBtn = document.createElement('button');
+      undoBtn.className = 'btn btn-undo-period';
+      undoBtn.title = typeof t === 'function' ? t('undoClosePeriod') : 'Отменить завершение периода';
+      undoBtn.textContent = '↩️';
+      undoBtn.addEventListener('click', undoClosePeriod);
+      container.appendChild(undoBtn);
+    }
   } else {
     // В архивном периоде — бейдж «архив»
     const badge = document.createElement('div');
@@ -355,32 +401,6 @@ window.addEventListener('load', () => {
     if (!period || !period.isCurrent) return; // только чтение в архиве
     if (_origMark) _origMark(studentId, lesson);
   };
-
-  // Патчим mark option click — сохраняем в период
-  document.querySelectorAll('.mark-option').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const group = getActiveGroup();
-      if (!group) return;
-      migrateGroupToPeriods(group);
-      const period = getActivePeriod(group);
-      if (!period || !period.isCurrent) return;
-      if (!period.marks) period.marks = {};
-
-      // pendingMark приходит из script.js
-      if (typeof pendingMark === 'undefined' || !pendingMark.studentId) return;
-      const { studentId, lesson } = pendingMark;
-      if (!period.marks[studentId]) period.marks[studentId] = {};
-      const mark = btn.dataset.mark;
-      if (mark === '') {
-        delete period.marks[studentId][lesson];
-      } else {
-        period.marks[studentId][lesson] = mark;
-      }
-      // Синхронизируем с student.marks для gamification
-      const student = group.students.find(s => s.id === studentId);
-      if (student) student.marks = { ...period.marks[studentId] };
-    });
-  });
 
   // Патчим gamification — используем getAllStudentMarks для звёзд/уровней
   if (typeof calcStars === 'function') {
