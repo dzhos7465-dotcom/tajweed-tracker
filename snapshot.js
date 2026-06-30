@@ -498,8 +498,15 @@ async function takeGroupProgressSnapshot() {
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(PAD, HEAD_H - 8); ctx.lineTo(W - PAD, HEAD_H - 8); ctx.stroke();
 
+    // ── Сортировка: сначала лучшие по звёздам, при равенстве — по алфавиту ──
+    const sortedStudents = [...group.students].sort((a, b) => {
+      const starsA = calcStars(a), starsB = calcStars(b);
+      if (starsB !== starsA) return starsB - starsA;
+      return a.name.localeCompare(b.name, 'ru');
+    });
+
     // ── Строки учеников ──
-    group.students.forEach((student, i) => {
+    sortedStudents.forEach((student, i) => {
       const rowY = HEAD_H + i * ROW_H;
 
       // Считаем данные
@@ -527,8 +534,18 @@ async function takeGroupProgressSnapshot() {
       ctx.fillStyle = level.color;
       ctx.beginPath(); ctx.rect(0, rowY, 4, ROW_H); ctx.fill();
 
-      // Аватар уровня
-      const avX = PAD + 20, avY = rowY + ROW_H/2;
+      // Медаль для топ-3 по звёздам (если у них есть хотя бы 1 звезда)
+      const MEDALS = ['🥇','🥈','🥉'];
+      if (i < 3 && stars > 0) {
+        ctx.font = '16px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(MEDALS[i], PAD + 8, rowY + ROW_H/2 + 6);
+        ctx.textAlign = 'left';
+      }
+
+      // Аватар уровня — сдвинут правее если есть медаль
+      const avXOffset = (i < 3 && stars > 0) ? 16 : 0;
+      const avX = PAD + 20 + avXOffset, avY = rowY + ROW_H/2;
       ctx.fillStyle = level.color + '25';
       ctx.beginPath(); ctx.arc(avX, avY, 18, 0, Math.PI*2); ctx.fill();
       ctx.strokeStyle = level.color;
@@ -540,7 +557,7 @@ async function takeGroupProgressSnapshot() {
       ctx.textAlign = 'left';
 
       // Имя ученика
-      const nameX = PAD + 46;
+      const nameX = PAD + 46 + avXOffset;
       const shortName = student.name.length > 22 ? student.name.slice(0,21)+'…' : student.name;
       ctx.font = 'bold 14px Arial,sans-serif';
       ctx.fillStyle = '#ffffff';
